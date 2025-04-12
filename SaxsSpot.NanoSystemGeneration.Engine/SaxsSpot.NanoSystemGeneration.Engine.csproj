@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
+    <BuildTime>$([System.DateTime]::Now.ToString('HHmmss'))</BuildTime>
+    <Version>1.0.1+$(BuildDate)$(BuildTime)</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SaxsSpot.NanoSystemGeneration.Contracts\SaxsSpot.NanoSystemGeneration.Contracts.csproj" />
+    <ProjectReference Include="..\SaxsSpot.NanoSystemGeneration.Storage\SaxsSpot.NanoSystemGeneration.Storage.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="SaxsSpot.Core.Contracts" Version="1.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+</Project>

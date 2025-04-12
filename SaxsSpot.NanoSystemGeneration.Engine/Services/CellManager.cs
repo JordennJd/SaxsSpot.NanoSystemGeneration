@@ -1,0 +1,120 @@
+using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Engine.Internal;
+using SaxsSpot.NanoSystemGeneration.Engine.Models.CellFactories;
+using SaxsSpot.NanoSystemGeneration.Engine.Models.Cells;
+
+namespace SaxsSpot.NanoSystemGeneration.Engine.Services;
+
+public class CellManager<T> where T : Cell
+{
+    private readonly List<List<List<T>>> _cells;
+    
+    public CellManager(int cellsCount, float sizeOfCell)
+    {
+	    var cellFactory = CellFactory.GetFactory(typeof(T));
+
+	    if (cellsCount < 3) throw new ArgumentException("count of cells cant be less then 27");
+	    
+	    var size = sizeOfCell * cellsCount;
+        var leftBorder = -size / 2f;
+        var rightBorder = size / 2f;
+
+        _cells = new List<List<List<T>>>(cellsCount);
+
+        for (var col = leftBorder + sizeOfCell; col <= rightBorder + 0.1; col += sizeOfCell)
+        {
+            var colums = new List<List<T>>(cellsCount);
+            
+            for (var row = leftBorder+sizeOfCell; row <= rightBorder + 0.1; row+=sizeOfCell)
+            {
+                var items = new List<T>(cellsCount);
+                
+                for (var cell = leftBorder+sizeOfCell; cell <= rightBorder + 0.1; cell+=sizeOfCell)
+                {
+                    var singleCell = (T)cellFactory.MakeCell(new CellCoordinates(_cells.Count, colums.Count, items.Count), col, row, cell);
+                    
+                    singleCell.NearCells = GetNeighborsIndexes(singleCell, cellsCount).ToArray();
+                    
+                    items.Add(singleCell);
+                }
+
+                colums.Add(items);
+            }
+
+            _cells.Add(colums);
+        }
+    }
+
+	public IEnumerable<Particle> GetParticles()
+	{
+		var list = new List<Particle>();
+		
+		foreach (var col in _cells)
+		foreach (var row in col)
+		foreach (var cell in row)
+		foreach (var par in cell.GetParticles()) list.Add(par);
+		
+		return list;
+	}
+
+	public async Task ClearAsync()
+	{
+		await Task.Run(() =>
+		{
+			foreach (var cell in _cells.SelectMany(col => col.SelectMany(row => row)))
+				cell.Delete();
+		});
+	}
+
+	public bool TryAddParallelepipedToCell(Particle parallelepiped)
+	{
+		var cell = FindCellForParallelepiped(parallelepiped);
+
+		if (cell.GetParticles().Any(parallelepiped.IsIntersect) || 
+		    GetNeighbors(cell)
+			    .SelectMany(x => x.GetParticles())
+			    .Any(parallelepiped.IsIntersect))
+		{
+			return false;
+		}
+
+		cell.Add(parallelepiped);
+		
+		return true;
+	}
+	
+	private IEnumerable<CellCoordinates> GetNeighborsIndexes(T cell, int cellCount)
+	{
+		for (var l = cell.Coordinates.X - 1; l <= cell.Coordinates.X + 1; l++)
+		for (var m = cell.Coordinates.Y - 1; m <= cell.Coordinates.Y + 1; m++)
+		for (var n = cell.Coordinates.Z - 1; n <= cell.Coordinates.Z + 1; n++)
+		{
+			if (cell.Coordinates.X == l && cell.Coordinates.Y == m && cell.Coordinates.Z == n) continue;
+			if (l < 0 || l >= cellCount || m < 0 || m >= cellCount || n < 0 || n >= cellCount) continue;
+			yield return new CellCoordinates(l, m, n);
+		}
+	}
+
+	private IEnumerable<T> GetNeighbors(T cell)
+	{
+		return cell.NearCells.Select(index => _cells[index.X][index.Y][index.Z]);
+	}
+
+	private T FindCellForParallelepiped(Particle parallelepiped) //TODO Rework to tree
+	{
+		for (var col = 0; col < _cells.Count; col++) // for (var col in Enumerable.Range(0, Cells.Count -1))
+			if (parallelepiped.Z <= _cells[0][0][col].ZBorder &&
+				(col > 0 ? parallelepiped.Z >= _cells[0][0][col - 1].ZBorder : true))
+				for (var row = 0; row < _cells.Count; row++) // for (var row in Enumerable.Range(0, Cells.Count - 1))
+					if (parallelepiped.Y <= _cells[0][row][col].YBorder &&
+						(row > 0 ? parallelepiped.Y >= _cells[0][row - 1][col].YBorder : true))
+						for (var cell = 0;
+							 cell < _cells.Count;
+							 cell++) // for (var cell in Enumerable.Range(0, Cells.Count - 1))
+							if (parallelepiped.X <= _cells[cell][row][col].XBorder &&
+								(cell > 0 ? parallelepiped.X >= _cells[cell - 1][row][col].XBorder : true))
+								return _cells[cell][row][col];
+		
+		throw new Exception("Cell not found");
+	}
+}
