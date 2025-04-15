@@ -33,7 +33,7 @@ public class ParticleGenerationParametersValidator : AbstractValidator<ParticleG
             .WithMessage("K must be greater than or equal to 0");
         
         RuleFor(parameters => parameters)
-            .Must(parameters => parameters.MinSize < parameters.MaxSize)
+            .Must(parameters => parameters.MinSize <= parameters.MaxSize)
             .WithMessage("Min size must be less than max size");
     }
 }

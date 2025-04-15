@@ -1,25 +1,18 @@
-﻿using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
+﻿using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
-using SaxsSpot.NanoSystemGeneration.Contracts.Services;
 using SaxsSpot.NanoSystemGeneration.Engine.Services;
 
 namespace SaxsSpot.NanoSystemGeneration.Tests;
 
 public class ParticleGenerationTests
 {
-    private INanoSystemGenerationService _nanoSystemGenerationService;
-
-    [SetUp]
-    public void Setup()
-    {
-        _nanoSystemGenerationService = new NanoSystemGenerationService();
-    }
-
     [Test]
-    [TestCase(1f, 100000, 0.2f, null, 1f, 3f, 1f, 6f, 0,
+    [TestCase(1f, 1000, 0.2f, null, 1f, 3f, 1f, 6f, 0,
         ParticleKind.Parallelepiped)]
-    [TestCase(0.5f, 100000, 0.2f, null, 1f, 3f, 1f, 6f, 0,
+    [TestCase(0.5f, 1000, 0.2f, null, 1f, 3f, 1f, 6f, 0,
         ParticleKind.Sphere)]
+
     public async Task SuccessGenerationCases(
         float epsilon,
         int count,
@@ -42,9 +35,12 @@ public class ParticleGenerationTests
             _ => throw new ArgumentOutOfRangeException(nameof(particleKind), particleKind, null)
         };
 
-        var system = await _nanoSystemGenerationService.Generate(generationParameters, new Progress<float>(),CancellationToken.None);
+        var nanoSystemGenerator = new NanoSystemGenerator(generationParameters);
+        var system = await nanoSystemGenerator.GenerateSystem();
         
-        Assert.That(system.Count, Is.EqualTo(count));
+        await nanoSystemGenerator.DistributeParticles(new Progress<float>(), CancellationToken.None);
+
+        Assert.That(NanoSystemValidator.ValidateSystemIntersections(system, await nanoSystemGenerator.GetGenerationZone()), Is.True);
     }
     
     // [Test]

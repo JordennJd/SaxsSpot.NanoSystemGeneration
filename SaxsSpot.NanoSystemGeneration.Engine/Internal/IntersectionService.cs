@@ -1,5 +1,9 @@
 using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
 using static System.Math;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
@@ -233,29 +237,122 @@ internal static class IntersectionService
 		return interCenterDistance < s1.Radius + s2.Radius;
 	}
 
+	public static bool IsParticleInsideZone(Particle particle, GenerationZone zone)
+	{
+		switch (zone.GenerationZoneForm)
+		{
+			case GenerationZoneForm.Cube when particle.ParticleKind == ParticleKind.Parallelepiped:
+				return IsParallelepipedInBoundsOfCubeZone(zone.GlobalSize, particle as Parallelepiped);
+			
+			case GenerationZoneForm.Cube when particle.ParticleKind == ParticleKind.Sphere:
+				return IsSphereInBoundsOfCubeZone(zone.GlobalSize, particle as Sphere);
+			
+			case GenerationZoneForm.Sphere when particle.ParticleKind == ParticleKind.Parallelepiped:
+				return IsParallelepipedInBoundsOfSphereZone(zone.GlobalSize, particle as Parallelepiped);
+			
+			case GenerationZoneForm.Sphere when particle.ParticleKind == ParticleKind.Sphere:
+				return IsSphereInBoundsOfSphereZone(zone.GlobalSize, particle as Sphere);
+			
+			default:
+				throw new ArgumentException("not supported check");
+		}
+	}
+
+	public static bool IsParallelepipedInBoundsOfCubeZone(float globalSize, Parallelepiped parallelepiped)
+	{
+		var par = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(parallelepiped);
+		
+		return IsVectorInBoundsCube(par.A, globalSize) && IsVectorInBoundsCube(par.B, globalSize) && IsVectorInBoundsCube(par.C, globalSize)
+		       && IsVectorInBoundsCube(par.D, globalSize) && IsVectorInBoundsCube(par.A1, globalSize) &&
+		       IsVectorInBoundsCube(par.B1, globalSize)
+		       && IsVectorInBoundsCube(par.C1, globalSize) && IsVectorInBoundsCube(par.D1, globalSize);
+	}
+	
+	public static bool IsParallelepipedInBoundsOfSphereZone(float globalRadius, Parallelepiped parallelepiped)
+	{
+		var par = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(parallelepiped);
+
+		return IsVectorInBoundsSphere(par.A, globalRadius) && IsVectorInBoundsSphere(par.B, globalRadius) &&
+		       IsVectorInBoundsSphere(par.C, globalRadius)
+		       && IsVectorInBoundsSphere(par.D, globalRadius) && IsVectorInBoundsSphere(par.A1, globalRadius) &&
+		       IsVectorInBoundsSphere(par.B1, globalRadius)
+		       && IsVectorInBoundsSphere(par.C1, globalRadius) && IsVectorInBoundsSphere(par.D1, globalRadius);
+	}
+
+	public static bool IsSphereInBoundsOfSphereZone(float globalRadius, Sphere sphere)
+	{
+		return sphere.Radius + Sqrt(Pow(sphere.X, 2) + Pow(sphere.Y, 2) + Pow(sphere.Z, 2)) <= globalRadius;
+	}
+	
+	public static bool IsSphereInBoundsOfCubeZone(float globalRadius, Sphere sphere)
+	{
+		var halfExtent = globalRadius / 2;
+
+		// Проверяем, чтобы вся сфера находилась внутри куба по всем осям
+		if (sphere.X - sphere.Radius < -halfExtent || sphere.X + sphere.Radius > halfExtent)
+			return false;
+		if (sphere.Y - sphere.Radius < -halfExtent || sphere.Y + sphere.Radius > halfExtent)
+			return false;
+		if (sphere.Z - sphere.Radius < -halfExtent || sphere.Z + sphere.Radius > halfExtent)
+			return false;
+
+		return true;
+	}
+
+	public static bool IsPointInsideParticle(Vector<float>? vector, Particle particle)
+	{
+		if (vector is null) return false;
+		
+		switch (particle.ParticleKind)
+		{
+			case ParticleKind.Sphere:
+				return IsPointInSphere(vector, particle);
+			case ParticleKind.Parallelepiped:
+				return IsPointInParallelepiped(vector, particle);
+			default:
+				throw new ArgumentException("Not supported check");
+		}
+	}
+	
+	private static bool IsVectorInBoundsCube(Vector<float> vector, float globalSize)
+	{
+		return vector[0] <= globalSize / 2 && vector[0] >= -globalSize / 2 &&
+		       vector[1] <= globalSize / 2 && vector[1] >= -globalSize / 2 &&
+		       vector[2] <= globalSize / 2 && vector[2] >= -globalSize / 2;
+	}
+	
+	private static bool IsVectorInBoundsSphere(Vector<float> vector, float radius)
+	{
+		return vector[0] <= radius && vector[0] >= -radius &&
+		       vector[1] <= radius && vector[1] >= -radius &&
+		       vector[2] <= radius && vector[2] >= -radius;
+	}
+	
 	/// <summary>
 	///     Checks if a vector is within the bounds of a parallelepiped.
 	/// </summary>
-	/// <param name="Vector">The vector to check.</param>
-	/// <param name="oldPar">The parallelepiped to compare against.</param>
+	/// <param name="vector">The vector to check.</param>
+	/// <param name="parallelepiped">The parallelepiped to compare against.</param>
 	/// <returns>True if the vector is within the bounds, false otherwise.</returns>
-	private static bool IsVectorInBounds(Vector<float> Vector, Parallelepiped oldPar)
+	private static bool IsVectorInBounds(Vector<float> vector, Parallelepiped parallelepiped)
 	{
-		return Vector[0] <= oldPar.A / 2 && Vector[0] >= -oldPar.A / 2 &&
-			   Vector[1] <= oldPar.A / 2 && Vector[1] >= -oldPar.A / 2 &&
-			   Vector[2] <= oldPar.A / 2 * oldPar.E && Vector[2] >= -oldPar.A / 2 * oldPar.E;
+		return vector[0] <= parallelepiped.A / 2 && vector[0] >= -parallelepiped.A / 2 &&
+		       vector[1] <= parallelepiped.A / 2 && vector[1] >= -parallelepiped.A / 2 &&
+		       vector[2] <= parallelepiped.A / 2 * parallelepiped.E && vector[2] >= -parallelepiped.A / 2 * parallelepiped.E;
 	}
-
-	public static bool IsParallelepipedInBoundsOfZone(float size, Parallelepiped parallelepiped)
+	
+	/// <summary>
+	///     Checks if a vector is within the bounds of a parallelepiped.
+	/// </summary>
+	/// <param name="vector">The vector to check.</param>
+	/// <param name="parallelepiped">The parallelepiped to compare against.</param>
+	/// <returns>True if the vector is within the bounds, false otherwise.</returns>
+	private static bool IsVectorInBounds(Vector<float> vector, Sphere sphere)
 	{
-		var par = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(parallelepiped);
-		var cubeZone = new Parallelepiped(size, 1);
-		if (IsVectorInBounds(par.A, cubeZone) && IsVectorInBounds(par.B, cubeZone) && IsVectorInBounds(par.C, cubeZone)
-			&& IsVectorInBounds(par.D, cubeZone) && IsVectorInBounds(par.A1, cubeZone) &&
-			IsVectorInBounds(par.B1, cubeZone)
-			&& IsVectorInBounds(par.C1, cubeZone) && IsVectorInBounds(par.D1, cubeZone)
-		   )
-			return true;
-		return false;
+		var radius = sphere.Radius;
+		
+		return vector[0] <= radius && vector[0] >= -radius &&
+		       vector[1] <= radius && vector[1] >= -radius &&
+		       vector[2] <= radius && vector[2] >= -radius;
 	}
 }

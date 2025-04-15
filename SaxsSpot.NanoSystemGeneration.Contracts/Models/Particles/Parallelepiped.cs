@@ -1,4 +1,5 @@
 using System.Numerics;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 
 namespace SaxsSpot.NanoSystemGeneration.Contracts.Models;
 
@@ -10,8 +11,11 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
     public float Theta { get; private set; } = Theta;
     
     public float Zenit { get; private set; } = Zenit;
+
+    public override ParticleKind ParticleKind { get; init; } = ParticleKind.Parallelepiped;
     
     public override float GetVolume()
+    
     {
         if(_volume == -1)
         {
@@ -26,6 +30,7 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
         return MathF.Sqrt(A * A + A * E + A * A);
     }
 
+
     public override void ChangePosition(float x, float y, float z, float fi = 0, float theta = 0, float zenit = 0)
     {
         X = x;
@@ -37,55 +42,8 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
         
     }
 
-    public override bool IsBoundOfCubeZone(Parallelepiped cube)
-    {
-        var vertices = GetVertices();
-        foreach (var vertex in vertices)
-        {
-            if(!IsVectorInBounds(vertex, cube))
-            {
-                return false;
-            }
-        }
-		
-        return true;
-    }
-
     public override string ToString()
     {
         return $"{A} {E} {X} {Y} {Z} {Phi} {Theta} {Zenit}";
-    }
-
-    private bool IsVectorInBounds(Vector3 Vector, Parallelepiped cube)
-    {
-        return Vector[0] <= cube.A / 2 && Vector[0] >= -cube.A / 2 &&
-               Vector[1] <= cube.A / 2 && Vector[1] >= -cube.A / 2 &&
-               Vector[2] <= cube.A / 2 * cube.E && Vector[2] >= -cube.A / 2 * cube.E;
-    }
-
-    private Vector3[] GetVertices()
-    {
-        Vector3[] localVertices = new Vector3[8];
-        float halfSide = A / 2;
-
-        Matrix4x4 Rotation = Matrix4x4.CreateFromYawPitchRoll(Theta, Phi, Zenit);
-
-        Vector3 Center = new Vector3(X, Y, Z);
-
-        localVertices[0] = new Vector3(-halfSide, -halfSide, -halfSide * E);
-        localVertices[1] = new Vector3(halfSide, -halfSide, -halfSide * E);
-        localVertices[2] = new Vector3(halfSide, halfSide, -halfSide * E);
-        localVertices[3] = new Vector3(-halfSide, halfSide, -halfSide * E);
-        localVertices[4] = new Vector3(-halfSide, -halfSide, halfSide * E);
-        localVertices[5] = new Vector3(halfSide, -halfSide, halfSide * E);
-        localVertices[6] = new Vector3(halfSide, halfSide, halfSide * E);
-        localVertices[7] = new Vector3(-halfSide, halfSide, halfSide * E);
-
-        for (int i = 0; i < 8; i++)
-        {
-            localVertices[i] = Vector3.Transform(localVertices[i], Rotation) + Center;
-        }
-
-        return localVertices;
     }
 }

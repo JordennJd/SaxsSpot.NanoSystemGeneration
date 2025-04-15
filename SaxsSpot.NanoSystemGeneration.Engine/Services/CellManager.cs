@@ -9,31 +9,38 @@ public class CellManager<T> where T : Cell
 {
     private readonly List<List<List<T>>> _cells;
     
-    public CellManager(int cellsCount, float sizeOfCell)
+    public CellManager(IList<Particle> particles, float globalSize)
     {
+	    var maxSemiDiagonal = particles.MaxBy(x => x.GetVolume())?.GetDiameter() / 2;
+
+	    var cellCount = Convert.ToInt32(globalSize / (maxSemiDiagonal * 2)) - 1;
+
+	    cellCount = cellCount > 70 ? 70 : cellCount;
+	    var cellSize = globalSize / cellCount;
+	    
 	    var cellFactory = CellFactory.GetFactory(typeof(T));
 
-	    if (cellsCount < 3) throw new ArgumentException("count of cells cant be less then 27");
+	    if (cellCount < 3) throw new ArgumentException("count of cells cant be less then 27");
 	    
-	    var size = sizeOfCell * cellsCount;
+	    var size = cellSize * cellCount;
         var leftBorder = -size / 2f;
         var rightBorder = size / 2f;
 
-        _cells = new List<List<List<T>>>(cellsCount);
+        _cells = new List<List<List<T>>>(cellCount);
 
-        for (var col = leftBorder + sizeOfCell; col <= rightBorder + 0.1; col += sizeOfCell)
+        for (var col = leftBorder + cellSize; col <= rightBorder + 0.1; col += cellSize)
         {
-            var colums = new List<List<T>>(cellsCount);
+            var colums = new List<List<T>>(cellCount);
             
-            for (var row = leftBorder+sizeOfCell; row <= rightBorder + 0.1; row+=sizeOfCell)
+            for (var row = leftBorder+cellSize; row <= rightBorder + 0.1; row+=cellSize)
             {
-                var items = new List<T>(cellsCount);
+                var items = new List<T>(cellCount);
                 
-                for (var cell = leftBorder+sizeOfCell; cell <= rightBorder + 0.1; cell+=sizeOfCell)
+                for (var cell = leftBorder+cellSize; cell <= rightBorder + 0.1; cell+=cellSize)
                 {
                     var singleCell = (T)cellFactory.MakeCell(new CellCoordinates(_cells.Count, colums.Count, items.Count), col, row, cell);
                     
-                    singleCell.NearCells = GetNeighborsIndexes(singleCell, cellsCount).ToArray();
+                    singleCell.NearCells = GetNeighborsIndexes(singleCell, cellCount).ToArray();
                     
                     items.Add(singleCell);
                 }

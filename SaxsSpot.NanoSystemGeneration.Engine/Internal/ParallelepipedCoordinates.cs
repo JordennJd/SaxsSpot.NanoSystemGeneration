@@ -20,4 +20,9 @@ internal record ParallelepipedCoordinates(Vector<float> A, Vector<float> B, Vect
     public Vector<float> C1 { get; set; } = C1;
     
     public Vector<float> D1 { get; set; } = D1;
+
+    public IEnumerable<Vector<float>> ForAll()
+    {
+        yield return A;yield return B;yield return C;yield return D;yield return A1;yield return B1;yield return C1;yield return D1;
+    }
 }

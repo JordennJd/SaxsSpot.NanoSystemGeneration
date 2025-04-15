@@ -9,6 +9,4 @@
     <PackageReference Include="SaxsSpot.Core.CommonObjectStorage" Version="1.0.2" />
     <PackageReference Include="SaxsSpot.Core.Contracts" Version="1.0.2" />
   </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
 </Project>

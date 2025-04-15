@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaxsSpot.NanoSystemGenerati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaxsSpot.NanoSystemGeneration.Storage", "SaxsSpot.NanoSystemGeneration.Storage\SaxsSpot.NanoSystemGeneration.Storage.csproj", "{3ACC2109-4E72-4D4D-879C-D29E6AA251BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaxsSpot.NanoSystemGeneration.PerfomanceTests", "SaxsSpot.NanoSystemGeneration.PerfomanceTests\SaxsSpot.NanoSystemGeneration.PerfomanceTests.csproj", "{B658926A-7C9C-4EC6-868A-315FD66C50D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{3ACC2109-4E72-4D4D-879C-D29E6AA251BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ACC2109-4E72-4D4D-879C-D29E6AA251BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3ACC2109-4E72-4D4D-879C-D29E6AA251BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B658926A-7C9C-4EC6-868A-315FD66C50D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B658926A-7C9C-4EC6-868A-315FD66C50D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B658926A-7C9C-4EC6-868A-315FD66C50D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B658926A-7C9C-4EC6-868A-315FD66C50D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

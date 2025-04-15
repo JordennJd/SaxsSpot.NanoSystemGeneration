@@ -1,5 +1,6 @@
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Complex32;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
@@ -13,8 +14,7 @@ internal static  class ParallelepipedCoverer
     /// <returns>A matrix of vectors representing the filled surface.</returns>
     public static async Task<List<List<List<Vector<float>>>>> FillSurface(ParallelepipedCoordinates par, int density)
     {
-        var MatrixOfVectors = await FillSurfaceFromCoordinates(par, density);
-        return MatrixOfVectors;
+        return await FillSurfaceFromCoordinates(par, density);;
     }
 
     public static List<List<Vector<float>>> FillBorders(ParallelepipedCoordinates par, int density)
@@ -90,11 +90,11 @@ internal static  class ParallelepipedCoverer
 
     private static List<Vector<float>> ToLinearVectors(Vector<float> vec1, Vector<float> vec2, int density)
     {
-        var Xs = Generate.LinearSpaced(density, vec1[0], vec2[0]);
-        var Ys = Generate.LinearSpaced(density, vec1[1], vec2[1]);
-        var Zs = Generate.LinearSpaced(density, vec1[2], vec2[2]);
+        var xs = Generate.LinearSpaced(density, vec1[0], vec2[0]);
+        var ys = Generate.LinearSpaced(density, vec1[1], vec2[1]);
+        var zs = Generate.LinearSpaced(density, vec1[2], vec2[2]);
         var list = new List<Vector<float>>();
-        for (var i = 0; i < density; i++) list.Add(Vector<float>.Build.DenseOfArray([(float)Xs[i], (float)Ys[i], (float)Zs[i]]));
+        for (var i = 0; i < density; i++) list.Add(Vector<float>.Build.DenseOfArray([(float)xs[i], (float)ys[i], (float)zs[i]]));
         return list;
     }
 

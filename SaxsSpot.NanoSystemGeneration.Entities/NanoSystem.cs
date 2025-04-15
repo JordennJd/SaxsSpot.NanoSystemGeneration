@@ -8,6 +8,9 @@ public class NanoSystem
 {
     [Column("id")]
     public long Id { get; set; }
+
+    [Column("status")]
+    public GenerationStatus Status { get; set; }
     
     [Column("series_id")]
     public long SeriesId { get; set; }
@@ -15,14 +18,11 @@ public class NanoSystem
     [Column("object_id")]
     public Guid ObjectId { get; set; }
     
+    [Column("user_id")]
+    public long UserId { get; set; }
+    
     [Column("particle_count")]
     public int ParticleCount { get; set; }
-
-    [Column("current_particle_count")]
-    public int CurrentParticleCount { get; set; }
-    
-    [Column("particle_kind")]
-    public ParticleKind ParticleKind { get; set; }
     
     [Column("global_size")]
     public float GlobalSize { get; set; }
@@ -45,18 +45,12 @@ public class NanoSystem
     [Column("theta")]
     public float Theta { get; set; }
     
-    [Column("current_numerical_concentration")]
-    public float CurrentNumericalConcentration { get; set; }
+    [Column("generation_start")]
+    public DateTime GenerationStart { get; set; }
     
-    [Column("current_global_size")]
-    public float CurrentGlobalSize { get; set; }
-    
-    [Column("generation_time")]
-    public DateTime GenerationTime { get; set; }
+    [Column("generation_end")]
+    public DateTime GenerationEnd { get; set; }
     
     [Column("input_date")]
     public DateTime InputDate { get; set; }
-    
-    [Column("user_id")]
-    public long UserId { get; set; }
 }
