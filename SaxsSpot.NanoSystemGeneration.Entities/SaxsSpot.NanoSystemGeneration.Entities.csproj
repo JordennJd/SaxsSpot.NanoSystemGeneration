@@ -5,12 +5,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SaxsSpot.NanoSystemGeneration.Contracts" Version="1.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SaxsSpot.NanoSystemGeneration.Contracts\SaxsSpot.NanoSystemGeneration.Contracts.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SaxsSpot.NanoSystemGeneration.Contracts\SaxsSpot.NanoSystemGeneration.Contracts.csproj" />
   </ItemGroup>
 </Project>
