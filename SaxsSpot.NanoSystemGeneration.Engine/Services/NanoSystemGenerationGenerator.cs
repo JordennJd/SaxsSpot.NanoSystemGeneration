@@ -7,7 +7,6 @@ using SaxsSpot.NanoSystemGeneration.Contracts.Services;
 using SaxsSpot.NanoSystemGeneration.Engine.Internal;
 using SaxsSpot.NanoSystemGeneration.Engine.Models.Cells;
 using SaxsSpot.NanoSystemGeneration.Engine.Models.ParticleFactories;
-using SaxsSpot.NanoSystemGeneration.Storage.Contracts;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Services;
 
