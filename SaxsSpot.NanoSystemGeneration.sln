@@ -6,10 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaxsSpot.NanoSystemGenerati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaxsSpot.NanoSystemGeneration.Tests", "SaxsSpot.NanoSystemGeneration.Tests\SaxsSpot.NanoSystemGeneration.Tests.csproj", "{E1F058F6-C595-4848-940E-932D0BA2B99F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaxsSpot.NanoSystemGeneration.Entities", "SaxsSpot.NanoSystemGeneration.Entities\SaxsSpot.NanoSystemGeneration.Entities.csproj", "{D77F357D-4EB1-4C1C-B136-3A89A2E720E2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaxsSpot.NanoSystemGeneration.Storage", "SaxsSpot.NanoSystemGeneration.Storage\SaxsSpot.NanoSystemGeneration.Storage.csproj", "{3ACC2109-4E72-4D4D-879C-D29E6AA251BD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaxsSpot.NanoSystemGeneration.PerfomanceTests", "SaxsSpot.NanoSystemGeneration.PerfomanceTests\SaxsSpot.NanoSystemGeneration.PerfomanceTests.csproj", "{B658926A-7C9C-4EC6-868A-315FD66C50D7}"
 EndProject
 Global

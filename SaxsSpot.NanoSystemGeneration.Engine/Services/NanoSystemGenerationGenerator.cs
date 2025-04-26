@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
