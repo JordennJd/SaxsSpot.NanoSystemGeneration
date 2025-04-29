@@ -52,6 +52,12 @@ pipeline {
                     '''
                 }
                 script {
+                        stage("Clear output directory nupkgs") {
+                            dir(solutionPath) {
+                                sh 'rm ./nupkgs -r'                        
+                            }
+                        }
+
                         stage("Build ${SOLUTION_PATH}") {
                             dir(SOLUTION_PATH) {
                                 sh 'dotnet build --configuration Release'
