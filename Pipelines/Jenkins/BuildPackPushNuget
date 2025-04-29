@@ -17,8 +17,22 @@ pipeline {
 
         stage('Set Build Number') {
             steps {
-                def version = readFile('component_version').trim()
-                contentReplace(configs: [fileContentReplaceConfig(configs: [fileContentReplaceItemConfig(replace: '<Version>${COMPONENT_VERSION}</Version>', search: '<Version></Version>')], fileEncoding: 'UTF-8', filePath: '**/*.csproj', lineSeparator: 'Unix')])
+                script {
+                    def version = readFile('component_version').trim()
+                    contentReplace(configs: [
+                        fileContentReplaceConfig(
+                            configs: [
+                                fileContentReplaceItemConfig(
+                                    replace: "<Version>${version}</Version>",
+                                    search: '<Version></Version>'
+                                )
+                            ],
+                            fileEncoding: 'UTF-8',
+                            filePath: '**/*.csproj',
+                            lineSeparator: 'Unix'
+                        )
+                    ])
+                }
             }
         }
 
