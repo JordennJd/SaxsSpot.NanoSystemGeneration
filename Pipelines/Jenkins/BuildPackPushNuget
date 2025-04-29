@@ -53,7 +53,7 @@ pipeline {
                 }
                 script {
                         stage("Clear output directory nupkgs") {
-                            dir(${SOLUTION_PATH}) {
+                            dir(SOLUTION_PATH) {
                                 sh 'rm ./nupkgs -r'                        
                             }
                         }
