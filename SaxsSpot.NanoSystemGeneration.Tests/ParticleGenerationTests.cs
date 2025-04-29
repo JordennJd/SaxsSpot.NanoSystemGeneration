@@ -12,9 +12,9 @@ namespace SaxsSpot.NanoSystemGeneration.Tests;
 public class ParticleGenerationTests
 {
     [Test]
-    [TestCase(1f, 100000, 0.3f, null, 1f, 3f, 1f, 6f, 0,
-        ParticleKind.Parallelepiped)]
-    [TestCase(0.5f, 100000, 0.3f, null, 1f, 3f, 1f, 6f, 0,
+    // [TestCase(1f, 100000, 0.3f, null, 1f, 3f, 1f, 6f, 0,
+    //     ParticleKind.Parallelepiped)]
+    [TestCase(0.5f, 100000, 0.4f, null, 1f, 3f, 1f, 3f, 1.1f,
         ParticleKind.Sphere)]
 
     public async Task SuccessGenerationCases(

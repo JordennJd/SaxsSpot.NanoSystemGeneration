@@ -11,7 +11,7 @@ public class CellManager<T> where T : Cell
     
     public CellManager(IList<Particle> particles, float globalSize)
     {
-	    var maxSemiDiagonal = particles.MaxBy(x => x.GetVolume())?.GetDiameter() / 2;
+	    var maxSemiDiagonal = particles.MaxBy(x => x.GetVolume())?.GetDiameter();
 
 	    var cellCount = Convert.ToInt32(globalSize / (maxSemiDiagonal * 2)) - 1;
 
@@ -73,19 +73,19 @@ public class CellManager<T> where T : Cell
 		});
 	}
 
-	public bool TryAddParallelepipedToCell(Particle parallelepiped)
+	public bool TryAddParallelepipedToCell(Particle particle)
 	{
-		var cell = FindCellForParallelepiped(parallelepiped);
+		var cell = FindCellForParallelepiped(particle);
 
-		if (cell.GetParticles().Any(parallelepiped.IsIntersect) || 
+		if (cell.GetParticles().Any(particle.IsIntersect) || 
 		    GetNeighbors(cell)
 			    .SelectMany(x => x.GetParticles())
-			    .Any(parallelepiped.IsIntersect))
+			    .Any(particle.IsIntersect))
 		{
 			return false;
 		}
 
-		cell.Add(parallelepiped);
+		cell.Add(particle);
 		
 		return true;
 	}

@@ -1,4 +1,5 @@
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
@@ -14,6 +15,7 @@ public class NanoSystemGenerator : INanoSystemGenerator
 	private readonly ParticleGenerationParameters _generationParameters;
 	private IList<Particle> _particles;
 	private GenerationZone? _generationZone;
+	private GenerationZone? _excessedGenerationZone;
 	
 	public NanoSystemGenerator(ParticleGenerationParameters generationParameters)
 	{
@@ -43,14 +45,14 @@ public class NanoSystemGenerator : INanoSystemGenerator
 
 		try
 		{
-			var count = 0;
+			var handledParticles = 0;
 
 			foreach (var particle in _particles)
 			{
-				progress?.Report((float)count / _particles.Count * 100f);
+				progress?.Report((float)handledParticles / _particles.Count * 100f);
 
 				cancellationToken.ThrowIfCancellationRequested();
-				for (var i = 0; i < 1000; i++)
+				for (var i = 0; i < 1000000; i++)
 				{
 					ParticleManipulator.ChangePosition(particle, generationZone.GlobalSize);
 
@@ -64,15 +66,24 @@ public class NanoSystemGenerator : INanoSystemGenerator
 
 					if (isAdded)
 					{
-						count++;
 						break;
 					}
 				}
+				
+				handledParticles++;
+			}
 
+			if (_excessedGenerationZone is not null)
+			{
+				return cellManager
+					.GetParticles()
+					.Where(particle => IntersectionService.IsParticleInsideZone(particle, _excessedGenerationZone))
+					.ToList();
 			}
 
 			return cellManager
 				.GetParticles();
+			
 		}
 		catch (OperationCanceledException)
 		{
@@ -90,13 +101,40 @@ public class NanoSystemGenerator : INanoSystemGenerator
 
 	public Task<GenerationZone> GetGenerationZone()
 	{
+		if (_excessedGenerationZone is not null && _generationParameters.Excess != 0)
+		{
+			return Task.FromResult(_excessedGenerationZone);
+		}	
+		
 		if (_generationZone is not null) return Task.FromResult(_generationZone);
 		
 		ArgumentNullException.ThrowIfNull(_generationParameters);
 
 		var volumeSum = _particles.Sum(x => x.GetVolume());
+
+		var c = 0.1f;
 		
 		//TODO логика обработки excess
+		if (_generationParameters.GetParticleKind() is ParticleKind.Sphere && _generationParameters.Excess != 0)
+		{
+			var nInCube = (int)(_generationParameters.Excess * _generationParameters.Count * 6.0 * MathF.Pow(1 + c, 3) / MathF.PI);
+			
+			var newSphereSystem = ParticleFactory.GetSystem(_generationParameters with { Count = nInCube });
+			_particles = newSphereSystem;
+			
+			var globalCubeSize =
+				MathF.Pow(newSphereSystem.Sum(x => x.GetVolume()) 
+				          / (_generationParameters.Excess * _generationParameters.NumericalConcentration!.Value),
+					1.0f / 3.0f);
+			
+			var r = globalCubeSize / (2.0f * (1f + c));
+			var newGenerationZone = new GenerationZone(r, GenerationZoneForm.Sphere);
+			
+			_excessedGenerationZone = newGenerationZone;
+			_generationZone = new GenerationZone(globalCubeSize, GenerationZoneForm.Cube);
+			
+			return Task.FromResult(_generationZone);
+		}
 
 		if (_generationParameters.NumericalConcentration is not null and not 0)
 		{

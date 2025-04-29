@@ -1,0 +1,91 @@
+pipeline {
+    agent any
+
+    environment {
+        DOTNET_VERSION = '9.0'
+        NUGET_SOURCE = 'saxscalc'
+        NUGET_API_KEY = credentials('nuget-api-key')
+        COMPONENT_VERSION = readFile('component_vesion').trim()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Read Config') {
+            steps {
+                script {
+                    solutions = []
+                    def configFile = readFile(env.CONFIG_FILE).trim()
+                    configFile.split('\\n').each { line ->
+                        // Проверка, чтобы игнорировать пустые строки
+                        if (line.trim()) {
+                            def parts = line.split(' ')
+                            if (parts.size() == 2) {
+                                solutions << [path: parts[0], priority: parts[1].toInteger()]
+                            }
+                        }
+                    }
+                    solutions.sort { it.priority } // Сортируем по приоритету
+                    echo "Solutions to process: ${solutions}"
+                }
+            }
+        }
+
+        stage('Set Build Number') {
+            steps {
+                contentReplace(configs: [fileContentReplaceConfig(configs: [fileContentReplaceItemConfig(replace: '<Version>${COMPONENT_VERSION}</Version>', search: '<Version></Version>')], fileEncoding: 'UTF-8', filePath: '**/*.csproj', lineSeparator: 'Unix')])
+            }
+        }
+
+        stage('Process Solutions') {
+            steps {
+                withCredentials([string(credentialsId: 'nuget-api-key', variable: 'NUGET_API_KEY')]) {
+                    sh '''
+                    if ! dotnet nuget list source | grep -q "saxscalc"; then
+                        dotnet nuget add source https://api.nuget.org/v3/index.json \
+                            --name saxscalc \
+                            --username Jordenn \
+                            --password $NUGET_API_KEY \
+                            --store-password-in-clear-text
+                    else
+                        echo "NuGet source 'saxscalc' already exists. Skipping add."
+                    fi
+                    '''
+                }
+                script {
+                        stage("Build ${solutionPath}") {
+                            dir(solutionPath) {
+                                sh 'dotnet build --configuration Release'
+                            }
+                        }
+
+                        stage("Pack ${solutionPath}") {
+                            dir(solutionPath) {
+                                sh 'dotnet pack --configuration Release --output nupkgs'
+                            }
+                        }
+
+                        stage("Push ${solutionPath} to NuGet") {
+                            dir(solutionPath) {
+                                withCredentials([string(credentialsId: 'nuget-api-key', variable: 'NUGET_API_KEY')]) {
+                                    sh 'dotnet nuget push nupkgs/*.nupkg --source ${NUGET_SOURCE} --api-key ${NUGET_API_KEY} --skip-duplicate'
+                                    sh 'rm ./nupkgs -r'
+                                }                            
+                        }
+                        }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo "✅ Build ${env.BUILD_NUMBER} successful!"
+        }
+        failure {
+            echo "❌ Build failed!"
+        }
+    }
+}
