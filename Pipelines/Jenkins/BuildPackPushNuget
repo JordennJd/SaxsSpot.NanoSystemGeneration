@@ -5,7 +5,7 @@ pipeline {
         DOTNET_VERSION = '9.0'
         NUGET_SOURCE = 'saxscalc'
         NUGET_API_KEY = credentials('nuget-api-key')
-        COMPONENT_VERSION = readFile('component_vesion').trim()
+        COMPONENT_VERSION = readFile('component_version').trim()
         SOLUTION_PATH = './'
     }
 
