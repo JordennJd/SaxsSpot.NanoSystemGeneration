@@ -18,7 +18,7 @@ public abstract record ParticleGenerationParameters(
     
     public float? NumericalConcentration { get; private set; } = NumericalConcentration;
     
-    public double GetNumericalConcentration(float sumOfVolumes)
+    public float GetNumericalConcentration(float sumOfVolumes)
     {
         if(NumericalConcentration is null)
         {
@@ -37,5 +37,5 @@ public abstract record ParticleGenerationParameters(
         return GlobalSize.Value;
     }
     
-    protected abstract ParticleKind GetParticleKind();
+    public abstract ParticleKind GetParticleKind();
 }

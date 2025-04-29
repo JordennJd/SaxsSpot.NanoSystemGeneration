@@ -28,6 +28,8 @@ public record Sphere(float Radius, float X = 0, float Y = 0, float Z = 0) : Part
         Z = z;
     }
     
+    public override float GetParticleSize() => Radius;
+    
     public override string ToString()
     {
         return $"{Radius} {X} {Y} {Z}";

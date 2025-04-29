@@ -52,7 +52,7 @@ public class CellManager<T> where T : Cell
         }
     }
 
-	public IEnumerable<Particle> GetParticles()
+	public IList<Particle> GetParticles()
 	{
 		var list = new List<Particle>();
 		

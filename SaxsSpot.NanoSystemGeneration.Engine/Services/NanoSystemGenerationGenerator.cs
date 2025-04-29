@@ -13,6 +13,7 @@ public class NanoSystemGenerator : INanoSystemGenerator
 {
 	private readonly ParticleGenerationParameters _generationParameters;
 	private IList<Particle> _particles;
+	private GenerationZone? _generationZone;
 	
 	public NanoSystemGenerator(ParticleGenerationParameters generationParameters)
 	{
@@ -29,7 +30,7 @@ public class NanoSystemGenerator : INanoSystemGenerator
 		return Task.FromResult(particles);
     }
 
-	public async Task DistributeParticles(IProgress<float> progress, CancellationToken cancellationToken)
+	public async Task<IList<Particle>> DistributeParticles(IProgress<float> progress, CancellationToken cancellationToken)
 	{
 		var generationZone = await GetGenerationZone();
 		
@@ -49,7 +50,7 @@ public class NanoSystemGenerator : INanoSystemGenerator
 				progress?.Report((float)count / _particles.Count * 100f);
 
 				cancellationToken.ThrowIfCancellationRequested();
-				for (var i = 0; i < 100000; i++)
+				for (var i = 0; i < 1000; i++)
 				{
 					ParticleManipulator.ChangePosition(particle, generationZone.GlobalSize);
 
@@ -69,6 +70,9 @@ public class NanoSystemGenerator : INanoSystemGenerator
 				}
 
 			}
+
+			return cellManager
+				.GetParticles();
 		}
 		catch (OperationCanceledException)
 		{
@@ -86,6 +90,8 @@ public class NanoSystemGenerator : INanoSystemGenerator
 
 	public Task<GenerationZone> GetGenerationZone()
 	{
+		if (_generationZone is not null) return Task.FromResult(_generationZone);
+		
 		ArgumentNullException.ThrowIfNull(_generationParameters);
 
 		var volumeSum = _particles.Sum(x => x.GetVolume());
@@ -95,9 +101,11 @@ public class NanoSystemGenerator : INanoSystemGenerator
 		if (_generationParameters.NumericalConcentration is not null and not 0)
 		{
 			var size = MathF.Pow(volumeSum / _generationParameters.NumericalConcentration.Value, 1f/3f);
-			return Task.FromResult(new GenerationZone(size, GenerationZoneForm.Cube));
+			_generationZone = new GenerationZone(size, GenerationZoneForm.Cube);
+			return Task.FromResult(_generationZone);
 		}
 		
-		return Task.FromResult(new GenerationZone(_generationParameters.GlobalSize!.Value, GenerationZoneForm.Cube));
+		_generationZone = new GenerationZone(_generationParameters.GlobalSize!.Value, GenerationZoneForm.Cube);
+		return Task.FromResult(_generationZone);
 	}
 }

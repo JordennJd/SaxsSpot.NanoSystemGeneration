@@ -22,6 +22,22 @@ public static class NanoSystemValidator
 
         return true;
     }
+
+    public static bool ValidateGenerationZone(GenerationZone zone, IList<Particle> particles)
+    {
+        var extremeParticles = new[] 
+            {particles.MaxBy(x => x.X), particles.MaxBy(x => x.Y), particles.MaxBy(x => x.Z)};
+
+        foreach (var extremeParticle in extremeParticles)
+        {
+            if (!IntersectionService.IsParticleInsideZone(extremeParticle, zone))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
     
     private static List<Vector<float>> GenerateRandomVectors(int count, GenerationZone zone)
     {

@@ -3,11 +3,10 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.2</Version>
+    <Version>1.0.7</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SaxsSpot.Core.CommonObjectStorage" Version="1.0.4" />
     <PackageReference Include="SaxsSpot.Core.Contracts" Version="1.0.4" />
   </ItemGroup>
 </Project>

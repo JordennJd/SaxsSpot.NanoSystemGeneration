@@ -14,7 +14,7 @@ public record ParallelepipedGenerationParameters(
     float Excess)
     : ParticleGenerationParameters(Count, NumericalConcentration, GlobalSize, MinSize, MaxSize, Theta, K, Excess)
 {
-    protected override ParticleKind GetParticleKind()
+    public override ParticleKind GetParticleKind()
     {
         return ParticleKind.Parallelepiped;
     }

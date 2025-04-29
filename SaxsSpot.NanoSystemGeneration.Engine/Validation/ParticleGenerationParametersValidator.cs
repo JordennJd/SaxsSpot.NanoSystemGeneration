@@ -15,9 +15,9 @@ public class ParticleGenerationParametersValidator : AbstractValidator<ParticleG
             .GreaterThanOrEqualTo(0).When(parameters => parameters.NumericalConcentration is not null)
             .WithMessage("Numerical Concentration must be greater than or equal to 0");
         
-        RuleFor(parameters => parameters.NumericalConcentration)
-            .LessThanOrEqualTo(0.4f).When(parameters => parameters.NumericalConcentration is not null)
-            .WithMessage("Numerical Concentration must be less than 0.4");
+        // RuleFor(parameters => parameters.NumericalConcentration)
+        //     .LessThanOrEqualTo(0.4f).When(parameters => parameters.NumericalConcentration is not null)
+        //     .WithMessage("Numerical Concentration must be less than 0.4");
         
         RuleFor(parameters => parameters.GlobalSize)
             .GreaterThanOrEqualTo(0).When(parameters => parameters.GlobalSize is not null)

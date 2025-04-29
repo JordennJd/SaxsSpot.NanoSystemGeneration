@@ -2,9 +2,21 @@
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProjects_005CSaxsSpot_005CSaxsSpot_002ECore_005CSaxsSpot_002ECore_002ECommonObjectStorage_005Cbin_005CDebug_005Cnet9_002E0_005CSaxsSpot_002ECore_002ECommonObjectStorage_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProjects_005CSaxsSpot_005CSaxsSpot_002ECore_005CSaxsSpot_002ECore_002EContracts_005Cbin_005CDebug_005Cnet9_002E0_005CSaxsSpot_002ECore_002EContracts_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProjects_005CSaxsSpot_005CSaxsSpot_002ECore_005CSaxsSpot_002ECore_002EGenericStorage_005Cbin_005CDebug_005Cnet9_002E0_005CSaxsSpot_002ECore_002EGenericStorage_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a77c1939_002Daa6a_002D403e_002D8167_002Dda92b7abc6d3/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">/usr/local/Cellar/dotnet/9.0.3/libexec/sdk/9.0.104/MSBuild.dll</s:String>
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/DotNetCliExePath/@EntryValue">/usr/local/Cellar/dotnet/9.0.3/libexec/dotnet</s:String>
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/DotNetX64CliExePath/@EntryValue">/usr/local/Cellar/dotnet/9.0.3/libexec/dotnet</s:String>
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/MonoExePath/@EntryValue">/Library/Frameworks/Mono.framework/Versions/6.12.0/bin/mono-sgen64</s:String>
+	<s:Boolean x:Key="/Default/Environment/Hierarchy/Build/BuildTool/RecentDotNetX64CliExePaths/=_002Fusr_002Flocal_002FCellar_002Fdotnet_002F9_002E0_002E3_002Flibexec_002Fdotnet/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6463bf16_002Dad94_002D4aae_002Db9ed_002Dfa428617125c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SuccessGenerationCases(1.0f,100000,0.3f,null,1.0f,3.0f,1.0f,6.0f,0,Parallelepiped)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;NUnit3x::E1F058F6-C595-4848-940E-932D0BA2B99F::net9.0::SaxsSpot.NanoSystemGeneration.Tests.ParticleGenerationTests.SuccessGenerationCases&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::E1F058F6-C595-4848-940E-932D0BA2B99F::net9.0::SaxsSpot.NanoSystemGeneration.Tests.ParticleGenerationTests.SuccessGenerationCases(1.0f,100000,0.3f,null,1.0f,3.0f,1.0f,6.0f,0,Parallelepiped)&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
+	
+	
+	
+	
+	
+	
+	
 	</wpf:ResourceDictionary>

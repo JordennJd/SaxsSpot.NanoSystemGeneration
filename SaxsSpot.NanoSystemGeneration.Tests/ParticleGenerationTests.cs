@@ -1,4 +1,8 @@
-﻿using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+﻿using System.Diagnostics;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
+using NUnit.Framework.Internal.Execution;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
 using SaxsSpot.NanoSystemGeneration.Engine.Services;
@@ -8,9 +12,9 @@ namespace SaxsSpot.NanoSystemGeneration.Tests;
 public class ParticleGenerationTests
 {
     [Test]
-    [TestCase(1f, 10000, 0.2f, null, 1f, 3f, 1f, 6f, 0,
+    [TestCase(1f, 100000, 0.3f, null, 1f, 3f, 1f, 6f, 0,
         ParticleKind.Parallelepiped)]
-    [TestCase(0.5f, 10000, 0.2f, null, 1f, 3f, 1f, 6f, 0,
+    [TestCase(0.5f, 100000, 0.3f, null, 1f, 3f, 1f, 6f, 0,
         ParticleKind.Sphere)]
 
     public async Task SuccessGenerationCases(
@@ -36,11 +40,27 @@ public class ParticleGenerationTests
         };
 
         var nanoSystemGenerator = new NanoSystemGenerator(generationParameters);
-        var system = await nanoSystemGenerator.GenerateSystem();
+        TestContext.Progress.WriteLine("Generating particles...");
         
-        await nanoSystemGenerator.DistributeParticles(new Progress<float>(), CancellationToken.None);
+        var system = await nanoSystemGenerator.GenerateSystem();
+        var progress = new Progress<float>();
+        progress.ProgressChanged += (sender, f) =>
+        {
+            if (f % 5f == 0)
+            {
+                TestContext.Progress.WriteLine($"{f}%");
+            }
+        };
+        
+        TestContext.Progress.WriteLine("Distributing particles...");
+        var distributeParticles = await nanoSystemGenerator.DistributeParticles(progress, CancellationToken.None);
 
-        Assert.That(NanoSystemValidator.ValidateSystemIntersections(system, await nanoSystemGenerator.GetGenerationZone()), Is.True);
+        TestContext.Progress.WriteLine("Validating system...");
+        await Assert.MultipleAsync(async () =>
+        {
+            Assert.That(NanoSystemValidator.ValidateGenerationZone(await nanoSystemGenerator.GetGenerationZone(), distributeParticles));
+            Assert.That(NanoSystemValidator.ValidateSystemIntersections(distributeParticles, await nanoSystemGenerator.GetGenerationZone()), Is.True);
+        });
     }
     
     // [Test]

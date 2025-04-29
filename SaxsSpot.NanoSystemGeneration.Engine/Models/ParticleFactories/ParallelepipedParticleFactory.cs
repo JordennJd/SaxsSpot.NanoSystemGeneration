@@ -34,7 +34,7 @@ public class ParallelepipedParticleFactory : ParticleFactory
     
     private Parallelepiped GenerateSingleParallelepiped(float min, float max, Gamma gamma, float? epsilon)
     {
-        switch (max.CompareTo(max))
+        switch (max.CompareTo(min))
         {
             case < 0:
                 throw new ArgumentException("max - min < 0");

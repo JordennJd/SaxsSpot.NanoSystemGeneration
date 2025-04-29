@@ -14,7 +14,7 @@ public interface INanoSystemGenerator
     /// <param name="progress"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task DistributeParticles(IProgress<float> progress, CancellationToken cancellationToken);
+    Task<IList<Particle>> DistributeParticles(IProgress<float> progress, CancellationToken cancellationToken);
 
     /// <summary>
     /// Generate system by parameters

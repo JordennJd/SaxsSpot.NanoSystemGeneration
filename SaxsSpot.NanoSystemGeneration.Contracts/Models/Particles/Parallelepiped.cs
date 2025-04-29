@@ -19,7 +19,7 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
     {
         if(_volume == -1)
         {
-            _volume = MathF.Pow(A*A*A*E, 3);
+            _volume = A*A*A*E;
         }
 		
         return _volume;    
@@ -38,9 +38,10 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
         Z = z;
         Phi = fi;
         Theta = theta;
-        Zenit = zenit;
-        
+        Zenit = zenit;   
     }
+    
+    public override float GetParticleSize() => A;
 
     public override string ToString()
     {
