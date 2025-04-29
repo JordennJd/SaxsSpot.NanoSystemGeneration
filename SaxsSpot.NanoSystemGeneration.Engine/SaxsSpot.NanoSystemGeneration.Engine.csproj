@@ -3,9 +3,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
-    <BuildTime>$([System.DateTime]::Now.ToString('HHmmss'))</BuildTime>
-    <Version>1.0.5</Version>
+    <Version></Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SaxsSpot.NanoSystemGeneration.Contracts\SaxsSpot.NanoSystemGeneration.Contracts.csproj" />
