@@ -115,11 +115,11 @@ public class NanoSystemGenerator : INanoSystemGenerator
 		var c = 0.1f;
 		
 		//TODO логика обработки excess
-		if (_generationParameters.GetParticleKind() is ParticleKind.Sphere && _generationParameters.Excess != 0)
+		if (_generationParameters.Excess != 0)
 		{
-			var nInCube = (int)(_generationParameters.Excess * _generationParameters.Count * 6.0 * MathF.Pow(1 + c, 3) / MathF.PI);
+			var particleCountInCubeZone = (int)(_generationParameters.Excess * _generationParameters.Count * 6.0 * MathF.Pow(1 + c, 3) / MathF.PI);
 			
-			var newSphereSystem = ParticleFactory.GetSystem(_generationParameters with { Count = nInCube });
+			var newSphereSystem = ParticleFactory.GetSystem(_generationParameters with { Count = particleCountInCubeZone });
 			_particles = newSphereSystem;
 			
 			var globalCubeSize =
@@ -127,10 +127,7 @@ public class NanoSystemGenerator : INanoSystemGenerator
 				          / (_generationParameters.Excess * _generationParameters.NumericalConcentration!.Value),
 					1.0f / 3.0f);
 			
-			var r = globalCubeSize / (2.0f * (1f + c));
-			var newGenerationZone = new GenerationZone(r, GenerationZoneForm.Sphere);
-			
-			_excessedGenerationZone = newGenerationZone;
+			_excessedGenerationZone = new GenerationZone(globalCubeSize / (2.0f * (1f + c)), GenerationZoneForm.Sphere);
 			_generationZone = new GenerationZone(globalCubeSize, GenerationZoneForm.Cube);
 			
 			return Task.FromResult(_generationZone);
