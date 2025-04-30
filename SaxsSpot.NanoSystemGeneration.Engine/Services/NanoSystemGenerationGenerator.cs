@@ -114,10 +114,13 @@ public class NanoSystemGenerator : INanoSystemGenerator
 
 		var c = 0.1f;
 		
+		//TODO логика обработки excess
 		if (_generationParameters.Excess != 0)
 		{
 			var particleCountInCubeZone = 
-				(int)(_generationParameters.Excess * _generationParameters.Count * MathF.Pow(1 + c, 3));
+				_generationParameters.GetParticleKind() is ParticleKind.Sphere ? 
+				(int)(_generationParameters.Excess * _generationParameters.Count * 6.0 * MathF.Pow(1 + c, 3) / MathF.PI)
+				: (int)(_generationParameters.Excess * _generationParameters.Count * MathF.Pow(1 + c, 3));
 			
 			var newExcessedSystem = ParticleFactory.GetSystem(_generationParameters with { Count = particleCountInCubeZone });
 			_particles = newExcessedSystem;
