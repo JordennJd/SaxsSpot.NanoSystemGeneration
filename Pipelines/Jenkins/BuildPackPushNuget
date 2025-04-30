@@ -4,8 +4,10 @@ pipeline {
     environment {
         DOTNET_VERSION = '9.0'
         NUGET_SOURCE = 'saxscalc'
-        NUGET_API_KEY = credentials('nuget-api-key')
+        NUGET_API_KEY = credentials('gitea-token')
         SOLUTION_PATH = './'
+        NUGET_REPO = 'https://local.devspot.tech/git/api/packages/SaxsSpot/nuget/index.json'
+        GIT_REPO = 'https://local.devspot.tech/git/SaxsSpot/SaxsSpot.NanoSystemGeneration'
     }
 
     stages {
@@ -63,9 +65,9 @@ pipeline {
                 withCredentials([string(credentialsId: 'nuget-api-key', variable: 'NUGET_API_KEY')]) {
                     sh '''
                     if ! dotnet nuget list source | grep -q "saxscalc"; then
-                        dotnet nuget add source https://api.nuget.org/v3/index.json \
+                        dotnet nuget add source ${NUGET_REPO} \
                             --name saxscalc \
-                            --username Jordenn \
+                            --username Jenkins \
                             --password $NUGET_API_KEY \
                             --store-password-in-clear-text
                     else
@@ -95,7 +97,7 @@ pipeline {
 
                     stage("Push ${SOLUTION_PATH} to NuGet") {
                         dir(SOLUTION_PATH) {
-                            withCredentials([string(credentialsId: 'nuget-api-key', variable: 'NUGET_API_KEY')]) {
+                            withCredentials([string(credentialsId: 'gitea-token', variable: 'NUGET_API_KEY')]) {
                                 sh 'dotnet nuget push nupkgs/*.nupkg --source ${NUGET_SOURCE} --api-key ${NUGET_API_KEY} --skip-duplicate'
                                 sh 'rm -rf ./nupkgs'
                             }
@@ -107,13 +109,13 @@ pipeline {
 
         stage('Tag Version in Git') {
             steps {
-                script {
-                    def tagName = env.VERSION_TAG
+                withCredentials([string(credentialsId: 'gitea-token', variable: 'GITEA_TOKEN')]) {
                     sh """
+                        git remote set-url origin https://${GITEA_TOKEN}@${GIT_REPO}
                         git config user.name "jenkins"
                         git config user.email "jenkins@local"
-                        git tag ${tagName}
-                        git push origin ${tagName}
+                        git tag ${VERSION_TAG}
+                        git push origin ${VERSION_TAG}
                     """
                 }
             }
