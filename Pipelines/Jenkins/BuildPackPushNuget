@@ -15,10 +15,32 @@ pipeline {
             }
         }
 
-        stage('Set Build Number') {
+        stage('Check Version') {
             steps {
                 script {
                     def version = readFile('component_version').trim()
+                    def tagName = "component-v${version}"
+
+                    sh "git fetch --tags"
+                    def tagExists = sh(script: "git tag --list '${tagName}'", returnStdout: true).trim()
+
+                    if (tagExists) {
+                        echo "Version ${version} already exists as Git tag (${tagName}). Skipping build."
+                        currentBuild.result = 'NOT_BUILT'
+                        error("Build skipped: version unchanged.")
+                    } else {
+                        echo "New version detected: ${version}"
+                        env.BUILD_VERSION = version
+                        env.VERSION_TAG = tagName
+                    }
+                }
+            }
+        }
+
+        stage('Set Build Number') {
+            steps {
+                script {
+                    def version = env.BUILD_VERSION
                     contentReplace(configs: [
                         fileContentReplaceConfig(
                             configs: [
@@ -51,40 +73,56 @@ pipeline {
                     fi
                     '''
                 }
+
                 script {
-                        stage("Clear output directory nupkgs") {
-                            dir(SOLUTION_PATH) {
-                                sh 'rm ./nupkgs -r'                        
+                    stage("Clear output directory nupkgs") {
+                        dir(SOLUTION_PATH) {
+                            sh 'rm -rf ./nupkgs'
+                        }
+                    }
+
+                    stage("Build ${SOLUTION_PATH}") {
+                        dir(SOLUTION_PATH) {
+                            sh 'dotnet build --configuration Release'
+                        }
+                    }
+
+                    stage("Pack ${SOLUTION_PATH}") {
+                        dir(SOLUTION_PATH) {
+                            sh 'dotnet pack --configuration Release --output nupkgs'
+                        }
+                    }
+
+                    stage("Push ${SOLUTION_PATH} to NuGet") {
+                        dir(SOLUTION_PATH) {
+                            withCredentials([string(credentialsId: 'nuget-api-key', variable: 'NUGET_API_KEY')]) {
+                                sh 'dotnet nuget push nupkgs/*.nupkg --source ${NUGET_SOURCE} --api-key ${NUGET_API_KEY} --skip-duplicate'
+                                sh 'rm -rf ./nupkgs'
                             }
                         }
+                    }
+                }
+            }
+        }
 
-                        stage("Build ${SOLUTION_PATH}") {
-                            dir(SOLUTION_PATH) {
-                                sh 'dotnet build --configuration Release'
-                            }
-                        }
-
-                        stage("Pack ${SOLUTION_PATH}") {
-                            dir(SOLUTION_PATH) {
-                                sh 'dotnet pack --configuration Release --output nupkgs'
-                            }
-                        }
-
-                        stage("Push ${SOLUTION_PATH} to NuGet") {
-                            dir(SOLUTION_PATH) {
-                                withCredentials([string(credentialsId: 'nuget-api-key', variable: 'NUGET_API_KEY')]) {
-                                    sh 'dotnet nuget push nupkgs/*.nupkg --source ${NUGET_SOURCE} --api-key ${NUGET_API_KEY} --skip-duplicate'
-                                    sh 'rm ./nupkgs -r'
-                                }                            
-                        }
-                        }
+        stage('Tag Version in Git') {
+            steps {
+                script {
+                    def tagName = env.VERSION_TAG
+                    sh """
+                        git config user.name "jenkins"
+                        git config user.email "jenkins@local"
+                        git tag ${tagName}
+                        git push origin ${tagName}
+                    """
                 }
             }
         }
     }
+
     post {
         success {
-            echo "✅ Build ${env.BUILD_NUMBER} successful!"
+            echo "✅ Build ${env.BUILD_NUMBER} (${env.BUILD_VERSION}) successful!"
         }
         failure {
             echo "❌ Build failed!"
