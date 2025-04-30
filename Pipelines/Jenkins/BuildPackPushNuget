@@ -7,6 +7,7 @@ pipeline {
         NUGET_API_KEY = credentials('gitea-token')
         SOLUTION_PATH = './'
         NUGET_REPO = 'https://local.devspot.tech/git/api/packages/SaxsSpot/nuget/index.json'
+        GIT_REPO = 'https://local.devspot.tech/git/SaxsSpot/SaxsSpot.NanoSystemGeneration'
     }
 
     stages {
@@ -111,7 +112,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'gitea-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
                         sh """
-                            git remote set-url origin https://${GIT_USER}:${GIT_TOKEN}@local.devspot.tech/your-namespace/your-repo.git
+                            git remote set-url origin https://${GIT_USER}:${GIT_TOKEN}@${GIT_REPO}
                             git config user.name "jenkins"
                             git config user.email "jenkins@local"
                             git tag ${VERSION_TAG}
