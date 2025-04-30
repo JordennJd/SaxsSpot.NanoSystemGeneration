@@ -111,8 +111,6 @@ pipeline {
                 script {
                     def tagName = env.VERSION_TAG
                     sh """
-                        git config user.name "jenkins"
-                        git config user.email "jenkins@local"
                         git tag ${tagName}
                         git push origin ${tagName}
                     """
