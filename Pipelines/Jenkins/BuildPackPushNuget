@@ -7,7 +7,6 @@ pipeline {
         NUGET_API_KEY = credentials('gitea-token')
         SOLUTION_PATH = './'
         NUGET_REPO = 'https://local.devspot.tech/git/api/packages/SaxsSpot/nuget/index.json'
-        GIT_REPO = 'https://local.devspot.tech/git/SaxsSpot/SaxsSpot.NanoSystemGeneration'
     }
 
     stages {
@@ -65,8 +64,8 @@ pipeline {
                 withCredentials([string(credentialsId: 'nuget-api-key', variable: 'NUGET_API_KEY')]) {
                     sh '''
                     if ! dotnet nuget list source | grep -q "saxscalc"; then
-                        dotnet nuget add source ${NUGET_REPO} \
-                            --name saxscalc \
+                        dotnet nuget add source $NUGET_REPO \
+                            --name $NUGET_SOURCE \
                             --username Jenkins \
                             --password $NUGET_API_KEY \
                             --store-password-in-clear-text
@@ -109,13 +108,13 @@ pipeline {
 
         stage('Tag Version in Git') {
             steps {
-                withCredentials([string(credentialsId: 'gitea-token', variable: 'GITEA_TOKEN')]) {
+                script {
+                    def tagName = env.VERSION_TAG
                     sh """
-                        git remote set-url origin https://${GITEA_TOKEN}@${GIT_REPO}
                         git config user.name "jenkins"
                         git config user.email "jenkins@local"
-                        git tag ${VERSION_TAG}
-                        git push origin ${VERSION_TAG}
+                        git tag ${tagName}
+                        git push origin ${tagName}
                     """
                 }
             }
