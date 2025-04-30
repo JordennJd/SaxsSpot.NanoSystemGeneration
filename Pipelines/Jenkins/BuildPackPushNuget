@@ -7,7 +7,7 @@ pipeline {
         NUGET_API_KEY = credentials('gitea-token')
         SOLUTION_PATH = './'
         NUGET_REPO = 'https://local.devspot.tech/git/api/packages/SaxsSpot/nuget/index.json'
-        GIT_REPO = 'https://local.devspot.tech/git/SaxsSpot/SaxsSpot.NanoSystemGeneration'
+        GIT_REPO = 'local.devspot.tech:SaxsSpot/SaxsSpot.NanoSystemGeneration.git'
     }
 
     stages {
