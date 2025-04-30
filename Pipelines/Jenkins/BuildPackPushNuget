@@ -96,7 +96,7 @@ pipeline {
 
                     stage("Push ${SOLUTION_PATH} to NuGet") {
                         dir(SOLUTION_PATH) {
-                            withCredentials([string(credentialsId: 'gitea-token', variable: 'NUGET_API_KEY')]) {
+                            withCredentials([string(credentialsId: 'nuget-api-key', variable: 'NUGET_API_KEY')]) {
                                 sh 'dotnet nuget push nupkgs/*.nupkg --source ${NUGET_SOURCE} --api-key ${NUGET_API_KEY} --skip-duplicate'
                                 sh 'rm -rf ./nupkgs'
                             }
