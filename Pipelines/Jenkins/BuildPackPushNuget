@@ -109,11 +109,15 @@ pipeline {
         stage('Tag Version in Git') {
             steps {
                 script {
-                    def tagName = env.VERSION_TAG
-                    sh """
-                        git tag ${tagName}
-                        git push origin ${tagName}
-                    """
+                    withCredentials([usernamePassword(credentialsId: 'gitea-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+                        sh """
+                            git remote set-url origin https://${GIT_USER}:${GIT_TOKEN}@local.devspot.tech/your-namespace/your-repo.git
+                            git config user.name "jenkins"
+                            git config user.email "jenkins@local"
+                            git tag ${VERSION_TAG}
+                            git push origin ${VERSION_TAG}
+                        """
+                    }
                 }
             }
         }
