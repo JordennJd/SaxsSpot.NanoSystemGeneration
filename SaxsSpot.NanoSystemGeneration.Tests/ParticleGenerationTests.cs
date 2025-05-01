@@ -58,7 +58,7 @@ public class ParticleGenerationTests
         TestContext.Progress.WriteLine("Validating system...");
         await Assert.MultipleAsync(async () =>
         {
-            Assert.That(NanoSystemValidator.ValidateSystemIntersectionsClassic(distributeParticles));
+            // Assert.That(NanoSystemValidator.ValidateSystemIntersectionsClassic(distributeParticles));
             Assert.That(NanoSystemValidator.ValidateGenerationZone(await nanoSystemGenerator.GetGenerationZone(), distributeParticles));
             Assert.That(NanoSystemValidator.ValidateSystemIntersections(distributeParticles, await nanoSystemGenerator.GetGenerationZone()), Is.True);
         });

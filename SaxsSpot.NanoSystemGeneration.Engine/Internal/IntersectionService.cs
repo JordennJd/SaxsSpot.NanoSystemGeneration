@@ -18,7 +18,7 @@ internal static class IntersectionService
 	public static bool IsIntersect(Parallelepiped oldPar, Parallelepiped newPar, int density = 10)
 	{
 		if (IsInterCenterDistanceMoreThenDiagonalCheck(oldPar, newPar)) return false;
-		// if (IsInterCenterDistanceLessThenSidesCheck(oldPar, newPar)) return true;
+		if (IsInterCenterDistanceLessThenSidesCheck(oldPar, newPar)) return true;
 
 		// return SAT.IsIntersect(oldPar, newPar);
 		
@@ -35,7 +35,7 @@ internal static class IntersectionService
 		ParallelepipedManipulator.DoParallelepipedTransform(ref oldCord, -newPar.X, -newPar.Y, -newPar.Z);
 		ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, newPar.Phi, newPar.Theta, newPar.Zenit);
 		var surfacesOld = ParallelepipedCoverer.FillBorders(oldCord, density);
-
+		
 		if (ElementaryIntersectCheckOnlyBorders(newPar, surfacesOld)) return true;
 
 		if (HardIntersectCheckOnlyBorders(oldPar, surfacesNew)) return true;
