@@ -12,10 +12,10 @@ namespace SaxsSpot.NanoSystemGeneration.Tests;
 public class ParticleGenerationTests
 {
     [Test]
-    [TestCase(1f, 10000, 0.2f, null, 1f, 3f, 1f, 6f, 1.03f,
+    [TestCase(1f, 100000, 0.2f, null, 1f, 3f, 1f, 6f, 0,
         ParticleKind.Parallelepiped)]
-    // [TestCase(0.5f, 100000, 0.4f, null, 1f, 3f, 1f, 3f, 1.1f,
-    //     ParticleKind.Sphere)]
+    [TestCase(0.5f, 10000, 0.2f, null, 1f, 3f, 1f, 3f, 1.1f,
+        ParticleKind.Sphere)]
 
     public async Task SuccessGenerationCases(
         float epsilon,
@@ -58,6 +58,7 @@ public class ParticleGenerationTests
         TestContext.Progress.WriteLine("Validating system...");
         await Assert.MultipleAsync(async () =>
         {
+            Assert.That(NanoSystemValidator.ValidateSystemIntersectionsClassic(distributeParticles));
             Assert.That(NanoSystemValidator.ValidateGenerationZone(await nanoSystemGenerator.GetGenerationZone(), distributeParticles));
             Assert.That(NanoSystemValidator.ValidateSystemIntersections(distributeParticles, await nanoSystemGenerator.GetGenerationZone()), Is.True);
         });

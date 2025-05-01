@@ -4,8 +4,8 @@ namespace SaxsSpot.NanoSystemGeneration.Engine.Models.CellFactories;
 
 public class InMemoryCellFactory : CellFactory
 {
-    public override InMemoryCell MakeCell(CellCoordinates coordinates, float xBorder, float yBorder, float zBorder)
+    public override InMemoryCell MakeCell(CellCoordinates cellCoordinates, float xBorder, float yBorder, float zBorder)
     {
-        return new InMemoryCell(coordinates, [], xBorder, yBorder, zBorder);
+        return new InMemoryCell(cellCoordinates, [], xBorder, yBorder, zBorder);
     }
 }

@@ -1,4 +1,5 @@
 using MathNet.Numerics.LinearAlgebra;
+using Microsoft.Extensions.Logging;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
@@ -8,6 +9,26 @@ namespace SaxsSpot.NanoSystemGeneration.Engine.Services;
 
 public static class NanoSystemValidator
 {
+    public static bool ValidateSystemIntersectionsClassic(IList<Particle> particles)
+    {
+        foreach (var p1 in particles)
+        {
+            foreach (var p2 in particles)
+            {
+                if(p1 == p2) continue;
+
+                if (p1.IsIntersect(p2))
+                {
+                    File.WriteAllLines("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/log", [p1.ToString(), p2.ToString()]);
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+
+    
     public static bool ValidateSystemIntersections(IList<Particle> particles, GenerationZone zone)
     {
         var randomVectors = GenerateRandomVectors(10000, zone);

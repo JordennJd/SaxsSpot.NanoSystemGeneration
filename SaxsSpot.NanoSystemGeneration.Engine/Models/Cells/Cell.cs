@@ -2,7 +2,7 @@ using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Models.Cells;
 
-public abstract record Cell(CellCoordinates Coordinates, CellCoordinates[] NearCells,
+public abstract record Cell(CellCoordinates CellCoordinates, CellCoordinates[] NearCells,
     float XBorder, float YBorder, float ZBorder)
 {
     public abstract IEnumerable<Particle> GetParticles();

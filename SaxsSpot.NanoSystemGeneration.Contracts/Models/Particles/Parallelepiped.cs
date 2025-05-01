@@ -47,4 +47,30 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
     {
         return $"{A} {E} {X} {Y} {Z} {Phi} {Theta} {Zenit}";
     }
+    
+    public Vector3[] GetVertices()
+    {
+        Vector3[] localVertices = new Vector3[8];
+        float halfSide = A / 2;
+
+        Matrix4x4 Rotation = Matrix4x4.CreateFromYawPitchRoll(Theta, Phi, Zenit);
+
+        Vector3 Center = new Vector3(X, Y, Z);
+
+        localVertices[0] = new Vector3(-halfSide, -halfSide, -halfSide * E);
+        localVertices[1] = new Vector3(halfSide, -halfSide, -halfSide * E);
+        localVertices[2] = new Vector3(halfSide, halfSide, -halfSide * E);
+        localVertices[3] = new Vector3(-halfSide, halfSide, -halfSide * E);
+        localVertices[4] = new Vector3(-halfSide, -halfSide, halfSide * E);
+        localVertices[5] = new Vector3(halfSide, -halfSide, halfSide * E);
+        localVertices[6] = new Vector3(halfSide, halfSide, halfSide * E);
+        localVertices[7] = new Vector3(-halfSide, halfSide, halfSide * E);
+
+        for (int i = 0; i < 8; i++)
+        {
+            localVertices[i] = Vector3.Transform(localVertices[i], Rotation) + Center;
+        }
+
+        return localVertices;
+    }
 }

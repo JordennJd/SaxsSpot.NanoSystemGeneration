@@ -7,13 +7,14 @@ using SaxsSpot.NanoSystemGeneration.Contracts.Services;
 using SaxsSpot.NanoSystemGeneration.Engine.Internal;
 using SaxsSpot.NanoSystemGeneration.Engine.Models.Cells;
 using SaxsSpot.NanoSystemGeneration.Engine.Models.ParticleFactories;
+using SaxsSpot.NanoSystemGeneration.Engine.Models.QuadTree;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Services;
 
 public class NanoSystemGenerator : INanoSystemGenerator
 {
 	private readonly ParticleGenerationParameters _generationParameters;
-	private IList<Particle> _particles;
+	private IList<Particle>? _particles;
 	private GenerationZone? _generationZone;
 	private GenerationZone? _excessedGenerationZone;
 	
@@ -34,10 +35,15 @@ public class NanoSystemGenerator : INanoSystemGenerator
 
 	public async Task<IList<Particle>> DistributeParticles(IProgress<float> progress, CancellationToken cancellationToken)
 	{
+		ArgumentNullException.ThrowIfNull(_generationParameters);
+		ArgumentNullException.ThrowIfNull(_particles);
+
 		var generationZone = await GetGenerationZone();
 		
-		var cellManager = new CellManager<InMemoryCell>(_particles, generationZone.GlobalSize);
-
+		// var cellManager = new CellManager<InMemoryCell>(_particles, generationZone.GlobalSize);
+		var tree = new TernaryTreeNode(
+			_particles!.MaxBy(x => x.GetDiameter())!.GetDiameter(), generationZone.GlobalSize);
+		
 		_particles = _particles
 			.OrderBy(p => p.GetVolume())
 			.Reverse()
@@ -52,17 +58,17 @@ public class NanoSystemGenerator : INanoSystemGenerator
 				progress?.Report((float)handledParticles / _particles.Count * 100f);
 
 				cancellationToken.ThrowIfCancellationRequested();
-				for (var i = 0; i < 1000000; i++)
+				for (var i = 0; i < 100000; i++)
 				{
 					ParticleManipulator.ChangePosition(particle, generationZone.GlobalSize);
-
+ 
 					while (!IntersectionService.IsParticleInsideZone(particle, generationZone))
 					{
 						ParticleManipulator.ChangePosition(particle, generationZone.GlobalSize);
 						i++;
 					}
 
-					var isAdded = cellManager.TryAddParallelepipedToCell(particle);
+					var isAdded = tree.TryInsertParticle(particle);
 
 					if (isAdded)
 					{
@@ -75,14 +81,15 @@ public class NanoSystemGenerator : INanoSystemGenerator
 
 			if (_excessedGenerationZone is not null)
 			{
-				return cellManager
+				return tree
 					.GetParticles()
 					.Where(particle => IntersectionService.IsParticleInsideZone(particle, _excessedGenerationZone))
 					.ToList();
 			}
 
-			return cellManager
-				.GetParticles();
+			return tree
+				.GetParticles()
+				.ToList();
 			
 		}
 		catch (OperationCanceledException)
@@ -95,7 +102,7 @@ public class NanoSystemGenerator : INanoSystemGenerator
 		}
 		finally
 		{
-			await cellManager.ClearAsync();
+			//await cellManager.ClearAsync();
 		}
 	}
 
@@ -117,10 +124,9 @@ public class NanoSystemGenerator : INanoSystemGenerator
 		//TODO логика обработки excess
 		if (_generationParameters.Excess != 0)
 		{
-			var particleCountInCubeZone = 
-				_generationParameters.GetParticleKind() is ParticleKind.Sphere ? 
-				(int)(_generationParameters.Excess * _generationParameters.Count * 6.0 * MathF.Pow(1 + c, 3) / MathF.PI)
-				: (int)(_generationParameters.Excess * _generationParameters.Count * MathF.Pow(1 + c, 3));
+			var particleCountInCubeZone =
+				(int)(_generationParameters.Excess * _generationParameters.Count * 6.0 * MathF.Pow(1 + c, 3) /
+				      MathF.PI);
 			
 			var newExcessedSystem = ParticleFactory.GetSystem(_generationParameters with { Count = particleCountInCubeZone });
 			_particles = newExcessedSystem;

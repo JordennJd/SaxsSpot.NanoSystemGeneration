@@ -2,21 +2,25 @@
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProjects_005CSaxsSpot_005CSaxsSpot_002ECore_005CSaxsSpot_002ECore_002ECommonObjectStorage_005Cbin_005CDebug_005Cnet9_002E0_005CSaxsSpot_002ECore_002ECommonObjectStorage_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProjects_005CSaxsSpot_005CSaxsSpot_002ECore_005CSaxsSpot_002ECore_002EContracts_005Cbin_005CDebug_005Cnet9_002E0_005CSaxsSpot_002ECore_002EContracts_002Edll/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProjects_005CSaxsSpot_005CSaxsSpot_002ECore_005CSaxsSpot_002ECore_002EGenericStorage_005Cbin_005CDebug_005Cnet9_002E0_005CSaxsSpot_002ECore_002EGenericStorage_002Edll/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AEnumerable_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F832399abc13b45b6bdbabfa022e4a28478a00_003Fde_003F2759fa6f_003FEnumerable_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AExceptionDispatchInfo_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F8ab611be9ff54c95b24a4f195587fac6d14c00_003F9d_003Fa4464baf_003FExceptionDispatchInfo_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AGenerate_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FLibrary_003FApplication_0020Support_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F4562fe71fa3a42a29438c8963fa580c6186a00_003F4b_003F6c4e0825_003FGenerate_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">/usr/local/Cellar/dotnet/9.0.3/libexec/sdk/9.0.104/MSBuild.dll</s:String>
 	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/DotNetCliExePath/@EntryValue">/usr/local/Cellar/dotnet/9.0.3/libexec/dotnet</s:String>
 	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/DotNetX64CliExePath/@EntryValue">/usr/local/Cellar/dotnet/9.0.3/libexec/dotnet</s:String>
 	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/MonoExePath/@EntryValue">/Library/Frameworks/Mono.framework/Versions/6.12.0/bin/mono-sgen64</s:String>
 	<s:Boolean x:Key="/Default/Environment/Hierarchy/Build/BuildTool/RecentDotNetX64CliExePaths/=_002Fusr_002Flocal_002FCellar_002Fdotnet_002F9_002E0_002E3_002Flibexec_002Fdotnet/@EntryIndexedValue">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6463bf16_002Dad94_002D4aae_002Db9ed_002Dfa428617125c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="SuccessGenerationCases(1.0f,100000,0.3f,null,1.0f,3.0f,1.0f,6.0f,0,Parallelepiped)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=683366fb_002Dfc2b_002D4d14_002Db8ee_002D7e3a6e571894/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SuccessGenerationCases(1.0f,100000,0.2f,null,1.0f,3.0f,1.0f,6.0f,0,Parallelepiped)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;NUnit3x::E1F058F6-C595-4848-940E-932D0BA2B99F::net9.0::SaxsSpot.NanoSystemGeneration.Tests.ParticleGenerationTests.SuccessGenerationCases&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::E1F058F6-C595-4848-940E-932D0BA2B99F::net9.0::SaxsSpot.NanoSystemGeneration.Tests.ParticleGenerationTests.SuccessGenerationCases(1.0f,100000,0.2f,null,1.0f,3.0f,1.0f,6.0f,0,Parallelepiped)&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8b9aed8d_002Df81f_002D4614_002Dbf84_002Da2e07466981a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SuccessGenerationCases" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;TestAncestor&gt;
-    &lt;TestId&gt;NUnit3x::E1F058F6-C595-4848-940E-932D0BA2B99F::net9.0::SaxsSpot.NanoSystemGeneration.Tests.ParticleGenerationTests&lt;/TestId&gt;
-  &lt;/TestAncestor&gt;
-&lt;/SessionState&gt;</s:String>
+	
+	
+	
+	
+	
+	
 	
 	
 	

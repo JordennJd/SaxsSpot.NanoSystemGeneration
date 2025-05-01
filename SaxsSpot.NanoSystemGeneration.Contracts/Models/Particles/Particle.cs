@@ -11,11 +11,11 @@ namespace SaxsSpot.NanoSystemGeneration.Contracts.Models;
 /// <param name="Z"></param>
 public abstract record Particle(float X, float Y, float Z)
 {
-    public float X { get; protected set; }
-    
-    public float Y { get; protected set; }
-    
-    public float Z { get; protected set; }
+    public float X { get; protected set; } = X;
+
+    public float Y { get; protected set; } = Y;
+
+    public float Z { get; protected set; } = Z;
     
     protected float _volume = -1;
 

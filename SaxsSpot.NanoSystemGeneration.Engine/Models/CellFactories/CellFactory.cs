@@ -5,7 +5,7 @@ namespace SaxsSpot.NanoSystemGeneration.Engine.Models.CellFactories;
 
 public abstract class CellFactory
 {
-    public abstract Cell MakeCell(CellCoordinates coordinates, float xBorder, float yBorder, float zBorder);
+    public abstract Cell MakeCell(CellCoordinates cellCoordinates, float xBorder, float yBorder, float zBorder);
 
     public static CellFactory GetFactory(Type cellType)
     {

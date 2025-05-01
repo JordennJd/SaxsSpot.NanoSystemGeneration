@@ -92,11 +92,11 @@ public class CellManager<T> where T : Cell
 	
 	private IEnumerable<CellCoordinates> GetNeighborsIndexes(T cell, int cellCount)
 	{
-		for (var l = cell.Coordinates.X - 1; l <= cell.Coordinates.X + 1; l++)
-		for (var m = cell.Coordinates.Y - 1; m <= cell.Coordinates.Y + 1; m++)
-		for (var n = cell.Coordinates.Z - 1; n <= cell.Coordinates.Z + 1; n++)
+		for (var l = cell.CellCoordinates.X - 1; l <= cell.CellCoordinates.X + 1; l++)
+		for (var m = cell.CellCoordinates.Y - 1; m <= cell.CellCoordinates.Y + 1; m++)
+		for (var n = cell.CellCoordinates.Z - 1; n <= cell.CellCoordinates.Z + 1; n++)
 		{
-			if (cell.Coordinates.X == l && cell.Coordinates.Y == m && cell.Coordinates.Z == n) continue;
+			if (cell.CellCoordinates.X == l && cell.CellCoordinates.Y == m && cell.CellCoordinates.Z == n) continue;
 			if (l < 0 || l >= cellCount || m < 0 || m >= cellCount || n < 0 || n >= cellCount) continue;
 			yield return new CellCoordinates(l, m, n);
 		}

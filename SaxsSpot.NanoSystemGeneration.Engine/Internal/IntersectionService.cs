@@ -1,5 +1,4 @@
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
@@ -18,13 +17,10 @@ internal static class IntersectionService
 	/// <returns>True if the two parallelepipeds intersect, false otherwise.</returns>
 	public static bool IsIntersect(Parallelepiped oldPar, Parallelepiped newPar, int density = 10)
 	{
-		if (oldPar.X == newPar.X && oldPar.Y == newPar.Y && oldPar.Z == newPar.Z) return true;
-
-
 		if (IsInterCenterDistanceMoreThenDiagonalCheck(oldPar, newPar)) return false;
-		if (IsInterCenterDistanceLessThenSidesCheck(oldPar, newPar)) return true;
+		// if (IsInterCenterDistanceLessThenSidesCheck(oldPar, newPar)) return true;
 
-		// return SAT.AreCubesIntersecting(oldPar, newPar);
+		// return SAT.IsIntersect(oldPar, newPar);
 		
 		var newCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(newPar);
 		ParallelepipedManipulator.DoParallelepipedTransform(ref newCord, -oldPar.X, -oldPar.Y, -oldPar.Z);
@@ -215,10 +211,10 @@ internal static class IntersectionService
 	public static bool IsInterCenterDistanceLessThenSidesCheck(Parallelepiped oldPar, Parallelepiped newPar)
 	{
 		var interCenterDistance =
-			Math.Sqrt(Math.Pow(oldPar.X - newPar.X, 2) + Math.Pow(oldPar.Y - newPar.Y, 2) + Math.Pow(oldPar.Z - newPar.Z, 2));
+			Sqrt(Pow(oldPar.X - newPar.X, 2) + Pow(oldPar.Y - newPar.Y, 2) + Pow(oldPar.Z - newPar.Z, 2));
 
 		var oldSide = oldPar.A * oldPar.E;
-		var newSide = oldPar.A * oldPar.E;
+		var newSide = newPar.A * newPar.E;
 
 		return interCenterDistance < newSide / 2 + oldSide / 2;
 	}
