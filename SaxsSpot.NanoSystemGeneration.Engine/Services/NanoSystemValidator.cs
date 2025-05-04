@@ -35,7 +35,9 @@ public static class NanoSystemValidator
 
         foreach (var randomVector in randomVectors)
         {
-            if (particles.Count(x => IntersectionService.IsPointInsideParticle(randomVector, x)) > 1)
+            if (particles
+                    .AsParallel()
+                    .Count(x => IntersectionService.IsPointInsideParticle(randomVector, x)) > 1)
             {
                 return false;
             }
