@@ -20,6 +20,8 @@ internal record ParallelepipedCoordinates(Vector<float> A, Vector<float> B, Vect
     public Vector<float> C1 { get; set; } = C1;
     
     public Vector<float> D1 { get; set; } = D1;
+    
+    public List<List<Vector<float>>>? CachedBorders { get; set; }
 
     public IEnumerable<Vector<float>> ForAll()
     {

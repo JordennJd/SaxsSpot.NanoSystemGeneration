@@ -31,7 +31,7 @@ public static class NanoSystemValidator
     
     public static bool ValidateSystemIntersections(IList<Particle> particles, GenerationZone zone)
     {
-        var randomVectors = GenerateRandomVectors(10000, zone);
+        var randomVectors = GenerateRandomVectors(100000, zone);
 
         foreach (var randomVector in randomVectors)
         {

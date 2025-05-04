@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
-using NUnit.Framework.Internal.Execution;
-using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+﻿using NUnit.Framework.Internal;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
 using SaxsSpot.NanoSystemGeneration.Engine.Services;
@@ -12,9 +8,9 @@ namespace SaxsSpot.NanoSystemGeneration.Tests;
 public class ParticleGenerationTests
 {
     [Test]
-    [TestCase(1f, 100000, 0.2f, null, 1f, 3f, 1f, 6f, 0,
+    [TestCase(1f, 100000, 0.4f, null, 1f, 3f, 1f, 6f, 0,
         ParticleKind.Parallelepiped)]
-    [TestCase(0.5f, 10000, 0.2f, null, 1f, 3f, 1f, 3f, 1.1f,
+    [TestCase(0.5f, 100000, 0.4f, null, 1f, 3f, 1f, 3f, 1.1f,
         ParticleKind.Sphere)]
 
     public async Task SuccessGenerationCases(
@@ -46,10 +42,7 @@ public class ParticleGenerationTests
         var progress = new Progress<float>();
         progress.ProgressChanged += (sender, f) =>
         {
-            if (f % 5f == 0)
-            {
-                TestContext.Progress.WriteLine($"{f}%");
-            }
+            Console.Write($"\r {f}%");
         };
         
         TestContext.Progress.WriteLine("Distributing particles...");

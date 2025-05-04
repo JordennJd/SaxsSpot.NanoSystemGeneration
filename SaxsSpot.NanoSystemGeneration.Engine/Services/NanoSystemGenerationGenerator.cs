@@ -1,17 +1,14 @@
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
-using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
-using SaxsSpot.NanoSystemGeneration.Contracts.Services;
 using SaxsSpot.NanoSystemGeneration.Engine.Internal;
-using SaxsSpot.NanoSystemGeneration.Engine.Models.Cells;
 using SaxsSpot.NanoSystemGeneration.Engine.Models.ParticleFactories;
 using SaxsSpot.NanoSystemGeneration.Engine.Models.QuadTree;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Services;
 
-public class NanoSystemGenerator : INanoSystemGenerator
+public class NanoSystemGenerator
 {
 	private readonly ParticleGenerationParameters _generationParameters;
 	private IList<Particle>? _particles;

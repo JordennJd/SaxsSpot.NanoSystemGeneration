@@ -19,30 +19,27 @@ internal static class IntersectionService
 	{
 		if (IsInterCenterDistanceMoreThenDiagonalCheck(oldPar, newPar)) return false;
 		if (IsInterCenterDistanceLessThenSidesCheck(oldPar, newPar)) return true;
-
-		// return SAT.IsIntersect(oldPar, newPar);
+		
+		var oldCord = oldPar.Coordinates 
+		              ?? ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(oldPar);
+		ParallelepipedManipulator.DoParallelepipedTransform(ref oldCord, -newPar.X, -newPar.Y, -newPar.Z);
+		ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, newPar.Phi, newPar.Theta, newPar.Zenit);
+		if (ElementaryIntersectCheckOnlyBorders(newPar, oldCord)) return true;
 		
 		var newCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(newPar);
 		ParallelepipedManipulator.DoParallelepipedTransform(ref newCord, -oldPar.X, -oldPar.Y, -oldPar.Z);
 		ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, oldPar.Phi, oldPar.Theta, oldPar.Zenit);
-		var surfacesNew = ParallelepipedCoverer.FillBorders(newCord, density);
+		if (ElementaryIntersectCheckOnlyBorders(oldPar, newCord)) return true;
 
-
-		if (ElementaryIntersectCheckOnlyBorders(oldPar, surfacesNew)) return true;
-
-
-		var oldCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(oldPar);
-		ParallelepipedManipulator.DoParallelepipedTransform(ref oldCord, -newPar.X, -newPar.Y, -newPar.Z);
-		ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, newPar.Phi, newPar.Theta, newPar.Zenit);
-		var surfacesOld = ParallelepipedCoverer.FillBorders(oldCord, density);
-		
-		if (ElementaryIntersectCheckOnlyBorders(newPar, surfacesOld)) return true;
-
-		if (HardIntersectCheckOnlyBorders(oldPar, surfacesNew)) return true;
+		var surfacesOld = oldPar.Coordinates?.CachedBorders ?? ParallelepipedCoverer.FillBorders(oldCord, density);
 		if (HardIntersectCheckOnlyBorders(newPar, surfacesOld)) return true;
 		
-		surfacesNew.Clear();
-		surfacesOld.Clear();
+		var surfacesNew = ParallelepipedCoverer.FillBorders(newCord, density);
+		if (HardIntersectCheckOnlyBorders(oldPar, surfacesNew)) return true;
+
+
+		newCord.CachedBorders = surfacesOld;
+		newPar.Coordinates = newCord;
 		
 		return false;
 	}
@@ -176,10 +173,10 @@ internal static class IntersectionService
 		return false;
 	}
 
-	private static bool ElementaryIntersectCheckOnlyBorders(Parallelepiped par, List<List<Vector<float>>> Borders)
+	private static bool ElementaryIntersectCheckOnlyBorders(Parallelepiped par, ParallelepipedCoordinates cords)
 	{
-		foreach (var Border in Borders)
-			if (IsVectorInBounds(Border[0], par) || IsVectorInBounds(Border[^1], par))
+		foreach (var edge in cords.ForAll())
+			if (IsVectorInBounds(edge, par) || IsVectorInBounds(edge, par))
 				return true;
 		return false;
 	}

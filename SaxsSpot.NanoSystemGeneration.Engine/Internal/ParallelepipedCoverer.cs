@@ -19,19 +19,19 @@ internal static  class ParallelepipedCoverer
 
     public static List<List<Vector<float>>> FillBorders(ParallelepipedCoordinates par, int density)
     {
-        var MatrixOfVectors = new List<List<Vector<float>>>();
-        var Border1 = ToLinearVectors(par.A, par.B, density);
-        var Border2 = ToLinearVectors(par.A, par.D, density);
-        var Border3 = ToLinearVectors(par.A, par.A1, density);
-        var Border4 = ToLinearVectors(par.C, par.D, density);
-        var Border5 = ToLinearVectors(par.C, par.B, density);
-        var Border6 = ToLinearVectors(par.C, par.C1, density);
-        var Border7 = ToLinearVectors(par.D1, par.D, density);
-        var Border8 = ToLinearVectors(par.D1, par.A1, density);
-        var Border9 = ToLinearVectors(par.D1, par.C1, density);
-        var Border10 = ToLinearVectors(par.B1, par.A1, density);
-        var Border11 = ToLinearVectors(par.B1, par.B, density);
-        var Border12 = ToLinearVectors(par.B1, par.C1, density);
+        var matrixOfVectors = new List<List<Vector<float>>>();
+        var border1 = ToLinearVectors(par.A, par.B, density);
+        var border2 = ToLinearVectors(par.A, par.D, density);
+        var border3 = ToLinearVectors(par.A, par.A1, density);
+        var border4 = ToLinearVectors(par.C, par.D, density);
+        var border5 = ToLinearVectors(par.C, par.B, density);
+        var border6 = ToLinearVectors(par.C, par.C1, density);
+        var border7 = ToLinearVectors(par.D1, par.D, density);
+        var border8 = ToLinearVectors(par.D1, par.A1, density);
+        var border9 = ToLinearVectors(par.D1, par.C1, density);
+        var border10 = ToLinearVectors(par.B1, par.A1, density);
+        var border11 = ToLinearVectors(par.B1, par.B, density);
+        var border12 = ToLinearVectors(par.B1, par.C1, density);
         
         //
         //   C+---+D
@@ -41,19 +41,19 @@ internal static  class ParallelepipedCoverer
         // |    |/ 
         // B1+---+A1	
         
-        MatrixOfVectors.Add(Border1);
-        MatrixOfVectors.Add(Border2);
-        MatrixOfVectors.Add(Border3);
-        MatrixOfVectors.Add(Border4);
-        MatrixOfVectors.Add(Border5);
-        MatrixOfVectors.Add(Border6);
-        MatrixOfVectors.Add(Border7);
-        MatrixOfVectors.Add(Border8);
-        MatrixOfVectors.Add(Border9);
-        MatrixOfVectors.Add(Border10);
-        MatrixOfVectors.Add(Border11);
-        MatrixOfVectors.Add(Border12);
-        return MatrixOfVectors;
+        matrixOfVectors.Add(border1);
+        matrixOfVectors.Add(border2);
+        matrixOfVectors.Add(border3);
+        matrixOfVectors.Add(border4);
+        matrixOfVectors.Add(border5);
+        matrixOfVectors.Add(border6);
+        matrixOfVectors.Add(border7);
+        matrixOfVectors.Add(border8);
+        matrixOfVectors.Add(border9);
+        matrixOfVectors.Add(border10);
+        matrixOfVectors.Add(border11);
+        matrixOfVectors.Add(border12);
+        return matrixOfVectors;
     }
 
     /// <summary>
