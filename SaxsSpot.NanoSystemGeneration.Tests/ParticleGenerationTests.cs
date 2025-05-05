@@ -66,8 +66,8 @@ public class ParticleGenerationTests
         
         TestContext.Progress.WriteLine("Writing result to log...");
 
-        File.WriteAllLines("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/log",
-            [$"time: {startTime - endTime} particleKind: {particleKind} count: {count} nc: {numericalConcentration} gs: {globalSize} excess: {excess} genZone: {isGenerationZoneValid} intersections: {isGenerationZoneValid}",
+        await File.AppendAllLinesAsync("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/log",
+        [$"time: {startTime - endTime} particleKind: {particleKind} count: {count} nc: {numericalConcentration} gs: {globalSize} excess: {excess} genZone: {isGenerationZoneValid} intersections: {isGenerationZoneValid}",
             "parameters:", $"realNc: {distributeParticles.Sum(x => x.GetVolume() / generationZone.GetVolume())} realCount: {distributeParticles.Count}"]);
         
         Assert.Multiple(() =>
