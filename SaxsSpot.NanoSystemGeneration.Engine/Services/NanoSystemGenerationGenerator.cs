@@ -1,5 +1,4 @@
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
-using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
@@ -131,7 +130,7 @@ public class NanoSystemGenerator
 			_particles = newExcessedSystem;
 			
 			var globalCubeSize =
-				MathF.Pow(newExcessedSystem.Sum(x => x.GetVolume()) * (_generationParameters.GetParticleKind() == ParticleKind.Parallelepiped ? 2 : 1)
+				MathF.Pow(newExcessedSystem.Sum(x => x.GetVolume())
 				          / (_generationParameters.Excess * _generationParameters.NumericalConcentration!.Value),
 					1.0f / 3.0f);
 			
