@@ -34,7 +34,7 @@ public class NanoSystemGenerator
 	{
 		ArgumentNullException.ThrowIfNull(_generationParameters);
 		ArgumentNullException.ThrowIfNull(_particles);
-		ArgumentNullException.ThrowIfNull(_generationZone);
+		_generationZone ??= await GetGenerationZone();
 
 		// var generationZone = await GetGenerationZone();
 		
