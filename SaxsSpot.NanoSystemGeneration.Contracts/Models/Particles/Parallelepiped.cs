@@ -1,6 +1,5 @@
 using System.Numerics;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
-using SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
 namespace SaxsSpot.NanoSystemGeneration.Contracts.Models;
 
@@ -12,9 +11,7 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
     public float Theta { get; private set; } = Theta;
     
     public float Zenit { get; private set; } = Zenit;
-
-    internal ParallelepipedCoordinates? Coordinates { get; set; }
-        
+    
     public override ParticleKind ParticleKind { get; init; } = ParticleKind.Parallelepiped;
     
     public override float GetVolume()
