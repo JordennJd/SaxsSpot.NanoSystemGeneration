@@ -1,4 +1,5 @@
 using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Single;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
@@ -26,5 +27,18 @@ internal record ParallelepipedCoordinates(Vector<float> A, Vector<float> B, Vect
     public IEnumerable<Vector<float>> ForAll()
     {
         yield return A;yield return B;yield return C;yield return D;yield return A1;yield return B1;yield return C1;yield return D1;
+    }
+
+    public ParallelepipedCoordinates Copy()
+    {
+        return new ParallelepipedCoordinates(
+            Vector.Build.DenseOfVector(A),
+            Vector.Build.DenseOfVector(B),
+            Vector.Build.DenseOfVector(C),
+            Vector.Build.DenseOfVector(D),
+            Vector.Build.DenseOfVector(A1),
+            Vector.Build.DenseOfVector(B1),
+            Vector.Build.DenseOfVector(C1),
+            Vector.Build.DenseOfVector(D1));
     }
 }

@@ -19,7 +19,7 @@ public static class NanoSystemValidator
 
                 if (p1.IsIntersect(p2))
                 {
-                    File.WriteAllLines("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/log", [p1.ToString(), p2.ToString()]);
+                    File.WriteAllLines("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/intersections", [p1.ToString(), p2.ToString()]);
                     return false;
                 }
             }
@@ -35,10 +35,14 @@ public static class NanoSystemValidator
 
         foreach (var randomVector in randomVectors)
         {
-            if (particles
-                    .AsParallel()
-                    .Count(x => IntersectionService.IsPointInsideParticle(randomVector, x)) > 1)
+            var intersected = particles
+                .AsParallel()
+                .Where(x => IntersectionService.IsPointInsideParticle(randomVector, x))
+                .ToList();
+            if (intersected.Count > 1)
             {
+                File.WriteAllLines("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/intersections", 
+                    [string.Join("\n", intersected.Select(x => x.ToString())), randomVector.ToString()]);
                 return false;
             }
         }

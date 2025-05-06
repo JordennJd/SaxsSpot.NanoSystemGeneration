@@ -20,26 +20,25 @@ internal static class IntersectionService
 		if (IsInterCenterDistanceMoreThenDiagonalCheck(oldPar, newPar)) return false;
 		if (IsInterCenterDistanceLessThenSidesCheck(oldPar, newPar)) return true;
 		
-		var oldCord = oldPar.Coordinates 
-		              ?? ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(oldPar);
+		var oldCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(oldPar);
+		// var oldCord = oldPar.Coordinates.Copy();
 		ParallelepipedManipulator.DoParallelepipedTransform(ref oldCord, -newPar.X, -newPar.Y, -newPar.Z);
 		ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, newPar.Phi, newPar.Theta, newPar.Zenit);
 		if (ElementaryIntersectCheckOnlyBorders(newPar, oldCord)) return true;
+		
+		var surfacesOld = ParallelepipedCoverer.FillBorders(oldCord, density);
+		if (HardIntersectCheckOnlyBorders(newPar, surfacesOld)) return true;
 		
 		var newCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(newPar);
 		ParallelepipedManipulator.DoParallelepipedTransform(ref newCord, -oldPar.X, -oldPar.Y, -oldPar.Z);
 		ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, oldPar.Phi, oldPar.Theta, oldPar.Zenit);
 		if (ElementaryIntersectCheckOnlyBorders(oldPar, newCord)) return true;
 
-		var surfacesOld = oldPar.Coordinates?.CachedBorders ?? ParallelepipedCoverer.FillBorders(oldCord, density);
-		if (HardIntersectCheckOnlyBorders(newPar, surfacesOld)) return true;
+		// var surfacesNew = ParallelepipedCoverer.FillBorders(newCord, density);
+		// if (HardIntersectCheckOnlyBorders(oldPar, surfacesNew)) return true;
 		
-		var surfacesNew = ParallelepipedCoverer.FillBorders(newCord, density);
-		if (HardIntersectCheckOnlyBorders(oldPar, surfacesNew)) return true;
-
-
-		newCord.CachedBorders = surfacesOld;
-		newPar.Coordinates = newCord;
+		// newCord.CachedBorders = surfacesOld;
+		// newPar.Coordinates = newCord;
 		
 		return false;
 	}
@@ -137,7 +136,7 @@ internal static class IntersectionService
 		throw new ArgumentException("is not a cube");
 	}
 
-	private static bool HardIntersectCheckOnlyBorders(Parallelepiped par, List<List<Vector<float>>> borders)
+	private static bool HardIntersectCheckOnlyBorders(Parallelepiped par, Vector<float>[][] borders)
 	{
 		return borders
 			.Any(border => border
@@ -281,7 +280,6 @@ internal static class IntersectionService
 	{
 		var halfExtent = globalRadius / 2;
 
-		// Проверяем, чтобы вся сфера находилась внутри куба по всем осям
 		if (sphere.X - sphere.Radius < -halfExtent || sphere.X + sphere.Radius > halfExtent)
 			return false;
 		if (sphere.Y - sphere.Radius < -halfExtent || sphere.Y + sphere.Radius > halfExtent)
