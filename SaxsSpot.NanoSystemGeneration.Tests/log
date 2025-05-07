@@ -1,0 +1,39 @@
+time: -00:01:25.0749050 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: -
+parameters: // with caching
+realNc: 0,19999993 realCount: 100000 
+time: -00:01:17.4609170 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: -
+parameters: // with caching
+realNc: 0,19999988 realCount: 100000
+time: -00:01:22.2231340 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: +
+parameters:
+realNc: 0,19999991 realCount: 100000
+time: -00:01:16.7902940 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: -
+parameters:
+realNc: 0,1999999 realCount: 100000
+time: -00:01:32.5704720 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: +
+parameters:
+realNc: 0,19999988 realCount: 100000
+time: -00:01:12.2792810 particleKind: Parallelepiped count: 10000 nc: 0,2 gs:  excess: 1,1 genZone: + intersections: +
+parameters:
+realNc: 0,15680803 realCount: 19870
+time: -00:02:54.6144910 particleKind: Sphere count: 100000 nc: 0,4 gs:  excess: 0 genZone: + intersections: +
+parameters:
+realNc: 0,39999983 realCount: 100000
+time: -00:08:33.0051020 particleKind: Sphere count: 100000 nc: 0,4 gs:  excess: 1,001 genZone: + intersections: +
+parameters:
+realNc: 0,15240668 realCount: 96570
+time: -00:01:12.5936710 particleKind: Sphere count: 10000 nc: 0,4 gs:  excess: 1,001 genZone: + intersections: +
+parameters:
+realNc: 0,37410432 realCount: 9303
+time: -00:00:55.7087560 particleKind: Parallelepiped count: 10000 nc: 0,2 gs:  excess: 1,001 genZone: + intersections: +
+parameters:
+realNc: 0,36416456 realCount: 18174
+time: -00:00:57.3586810 particleKind: Parallelepiped count: 10000 nc: 0,2 gs:  excess: 1,001 genZone: + intersections: +
+parameters:
+realNc: 0,36339507 realCount: 18128
+time: -00:00:59.0563190 particleKind: Parallelepiped count: 10000 nc: 0,2 gs:  excess: 1,05 genZone: + intersections: +
+parameters:
+realNc: 0,38074365 realCount: 18989
+time: -00:02:44.7597170 particleKind: Sphere count: 10000 nc: 0,4 gs:  excess: 1,05 genZone: + intersections: +
+parameters:
+realNc: 0,38882464 realCount: 9672
