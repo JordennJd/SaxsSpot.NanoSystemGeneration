@@ -27,12 +27,12 @@
     &lt;TestId&gt;NUnit3x::E1F058F6-C595-4848-940E-932D0BA2B99F::net9.0::SaxsSpot.NanoSystemGeneration.Tests.ParticleGenerationTests.SuccessGenerationCases(1.0f,100000,0.2f,null,1.0f,3.0f,1.0f,6.0f,0,Parallelepiped)&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=60d0b194_002D20d0_002D48c2_002Dad67_002Dcc33bc38d3b8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="SuccessGenerationCases(1.0f,100000,0.2f,null,1.0f,3.0f,1.0f,6.0f,0,Parallelepiped)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=60d0b194_002D20d0_002D48c2_002Dad67_002Dcc33bc38d3b8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SuccessGenerationCases(1.0f,100000,0.2f,null,1.0f,3.0f,1.0f,6.0f,0,Parallelepiped)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;NUnit3x::E1F058F6-C595-4848-940E-932D0BA2B99F::net9.0::SaxsSpot.NanoSystemGeneration.Tests.ParticleGenerationTests.SuccessGenerationCases(1.0f,100000,0.2f,null,1.0f,3.0f,1.0f,6.0f,0,Parallelepiped)&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::E1F058F6-C595-4848-940E-932D0BA2B99F::net9.0::SaxsSpot.NanoSystemGeneration.Tests.ParticleGenerationTests.SuccessGenerationCases&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=96af3116_002D4644_002D4390_002Da769_002D95586dd0c09d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SuccessGenerationCases(1.0f,10000,0.2f,null,1.0f,3.0f,1.0f,6.0f,1.1f,Parallelepiped)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=96af3116_002D4644_002D4390_002Da769_002D95586dd0c09d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="SuccessGenerationCases(1.0f,10000,0.2f,null,1.0f,3.0f,1.0f,6.0f,1.1f,Parallelepiped)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;NUnit3x::E1F058F6-C595-4848-940E-932D0BA2B99F::net9.0::SaxsSpot.NanoSystemGeneration.Tests.ParticleGenerationTests.SuccessGenerationCases&lt;/TestId&gt;
   &lt;/TestAncestor&gt;

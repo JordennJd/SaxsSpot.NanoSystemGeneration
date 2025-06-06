@@ -314,9 +314,7 @@ internal static class IntersectionService
 	
 	private static bool IsVectorInBoundsSphere(Vector<float> vector, float radius)
 	{
-		return vector[0] <= radius && vector[0] >= -radius &&
-		       vector[1] <= radius && vector[1] >= -radius &&
-		       vector[2] <= radius && vector[2] >= -radius;
+		return vector[0]*vector[0] + vector[1]*vector[1] + vector[2]*vector[2] <= radius * radius;
 	}
 	
 	/// <summary>
