@@ -5,7 +5,7 @@ namespace SaxsSpot.NanoSystemGeneration.Engine.Extensions;
 
 public static class ParallelepipedExtensions
 {
-    public static double GetAmplitude(this Parallelepiped parallelepiped)
+    public static float GetAmplitude(this Parallelepiped parallelepiped)
     {
         var rotateMatrix = parallelepiped.GetRotateMatrix();
         var ex = rotateMatrix * Vector<float>.Build.DenseOfArray([1, 0, 0]);
@@ -16,9 +16,9 @@ public static class ParallelepipedExtensions
         var qy = ey.DotProduct(radiusVector);
         var qz = ez.DotProduct(radiusVector);
         
-        var amplitude = 8 * (Math.Sin(parallelepiped.A / 2 * qx) *
-                             Math.Sin(parallelepiped.A * parallelepiped.E / 2 * qy) *
-                             Math.Sin(parallelepiped.A / 2 * qz));
+        var amplitude = 8 * (MathF.Sin(parallelepiped.A / 2 * qx) *
+                             MathF.Sin(parallelepiped.A * parallelepiped.E / 2 * qy) *
+                             MathF.Sin(parallelepiped.A / 2 * qz));
         return amplitude;
     }
 
