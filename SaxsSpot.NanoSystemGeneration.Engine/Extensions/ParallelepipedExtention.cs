@@ -7,9 +7,10 @@ public static class ParallelepipedExtention
 {
     public static double GetAmplitudeByParallelepiped(this Parallelepiped parallelepiped, Vector<float> qVector)
     {
-        var ex = parallelepiped.GetRotateMatrix() * Vector<float>.Build.DenseOfArray([1, 0, 0]);
-        var ey = parallelepiped.GetRotateMatrix() * Vector<float>.Build.DenseOfArray([0, 1, 0]);
-        var ez = parallelepiped.GetRotateMatrix() * Vector<float>.Build.DenseOfArray([0, 0, 1]);
+        var rotateMatrix = parallelepiped.GetRotateMatrix();
+        var ex = rotateMatrix * Vector<float>.Build.DenseOfArray([1, 0, 0]);
+        var ey = rotateMatrix * Vector<float>.Build.DenseOfArray([0, 1, 0]);
+        var ez = rotateMatrix * Vector<float>.Build.DenseOfArray([0, 0, 1]);
         var qx = ex.DotProduct(qVector);
         var qy = ey.DotProduct(qVector);
         var qz = ez.DotProduct(qVector);
