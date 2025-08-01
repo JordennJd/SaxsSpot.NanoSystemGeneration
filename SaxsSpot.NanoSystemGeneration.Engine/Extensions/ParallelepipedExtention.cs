@@ -3,17 +3,19 @@ using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Extensions;
 
-public static class ParallelepipedExtention
+public static class ParallelepipedExtensions
 {
-    public static double GetAmplitudeByParallelepiped(this Parallelepiped parallelepiped, Vector<float> qVector)
+    public static double GetAmplitude(this Parallelepiped parallelepiped)
     {
         var rotateMatrix = parallelepiped.GetRotateMatrix();
         var ex = rotateMatrix * Vector<float>.Build.DenseOfArray([1, 0, 0]);
         var ey = rotateMatrix * Vector<float>.Build.DenseOfArray([0, 1, 0]);
         var ez = rotateMatrix * Vector<float>.Build.DenseOfArray([0, 0, 1]);
-        var qx = ex.DotProduct(qVector);
-        var qy = ey.DotProduct(qVector);
-        var qz = ez.DotProduct(qVector);
+        var radiusVector = Vector<float>.Build.DenseOfArray([parallelepiped.X, parallelepiped.Y, parallelepiped.Z]);
+        var qx = ex.DotProduct(radiusVector);
+        var qy = ey.DotProduct(radiusVector);
+        var qz = ez.DotProduct(radiusVector);
+        
         var amplitude = 8 * (Math.Sin(parallelepiped.A / 2 * qx) *
                              Math.Sin(parallelepiped.A * parallelepiped.E / 2 * qy) *
                              Math.Sin(parallelepiped.A / 2 * qz));
