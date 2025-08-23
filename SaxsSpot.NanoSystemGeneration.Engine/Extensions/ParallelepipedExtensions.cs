@@ -47,6 +47,6 @@ public static class ParallelepipedExtensions
             { 0, 0, 1 }
         });
 		
-        return zRotate * yRotate * xRotate;
+        return xRotate * yRotate * zRotate;
     }
 }
