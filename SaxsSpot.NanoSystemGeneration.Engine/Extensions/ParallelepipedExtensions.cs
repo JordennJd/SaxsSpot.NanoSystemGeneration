@@ -5,45 +5,45 @@ namespace SaxsSpot.NanoSystemGeneration.Engine.Extensions;
 
 public static class ParallelepipedExtensions
 {
-    public static float GetAmplitude(this Parallelepiped parallelepiped)
+    public static double GetAmplitude(this Parallelepiped parallelepiped)
     {
         var rotateMatrix = parallelepiped.GetRotateMatrix();
-        var ex = rotateMatrix * Vector<float>.Build.DenseOfArray([1, 0, 0]);
-        var ey = rotateMatrix * Vector<float>.Build.DenseOfArray([0, 1, 0]);
-        var ez = rotateMatrix * Vector<float>.Build.DenseOfArray([0, 0, 1]);
-        var radiusVector = Vector<float>.Build.DenseOfArray([parallelepiped.X, parallelepiped.Y, parallelepiped.Z]);
+        var ex = rotateMatrix * Vector<double>.Build.DenseOfArray([1, 0, 0]);
+        var ey = rotateMatrix * Vector<double>.Build.DenseOfArray([0, 1, 0]);
+        var ez = rotateMatrix * Vector<double>.Build.DenseOfArray([0, 0, 1]);
+        var radiusVector = Vector<double>.Build.DenseOfArray([parallelepiped.X, parallelepiped.Y, parallelepiped.Z]);
         var qx = ex.DotProduct(radiusVector);
         var qy = ey.DotProduct(radiusVector);
         var qz = ez.DotProduct(radiusVector);
         
-        var amplitude = 8 * (MathF.Sin(parallelepiped.A / 2 * qx) *
-                             MathF.Sin(parallelepiped.A * parallelepiped.E / 2 * qy) *
-                             MathF.Sin(parallelepiped.A / 2 * qz));
+        var amplitude = 8 * (Math.Sin(parallelepiped.A / 2 * qx) *
+                             Math.Sin(parallelepiped.A * parallelepiped.E / 2 * qy) *
+                             Math.Sin(parallelepiped.A / 2 * qz));
         return amplitude;
     }
 
-    private static Matrix<float> GetRotateMatrix(this Parallelepiped parallelepiped)
+    private static Matrix<double> GetRotateMatrix(this Parallelepiped parallelepiped)
     {
-        var xRotate = Matrix<float>.Build.DenseOfArray(new[,]
+        var xRotate = Matrix<double>.Build.DenseOfArray(new[,]
             {
                 { 1, 0, 0 },
-                { 0, MathF.Cos(parallelepiped.Phi), -MathF.Sin(parallelepiped.Phi) },
-                { 0, MathF.Sin(parallelepiped.Phi), MathF.Cos(parallelepiped.Phi) }
+                { 0, Math.Cos(parallelepiped.Phi), -Math.Sin(parallelepiped.Phi) },
+                { 0, Math.Sin(parallelepiped.Phi), Math.Cos(parallelepiped.Phi) }
             }
         );
 		
-        var yRotate = Matrix<float>.Build.DenseOfArray(new[,]
+        var yRotate = Matrix<double>.Build.DenseOfArray(new[,]
             {
-                { MathF.Cos(parallelepiped.Theta), 0, MathF.Sin(parallelepiped.Theta) },
+                { Math.Cos(parallelepiped.Theta), 0, Math.Sin(parallelepiped.Theta) },
                 { 0, 1, 0 },
-                { -MathF.Sin(parallelepiped.Theta), 0, MathF.Cos(parallelepiped.Theta) }
+                { -Math.Sin(parallelepiped.Theta), 0, Math.Cos(parallelepiped.Theta) }
             }
         );
 		
-        var zRotate = Matrix<float>.Build.DenseOfArray(new[,]
+        var zRotate = Matrix<double>.Build.DenseOfArray(new[,]
         {
-            { MathF.Cos(parallelepiped.Zenit), -MathF.Sin(parallelepiped.Zenit), 0 },
-            { MathF.Sin(parallelepiped.Zenit), MathF.Cos(parallelepiped.Zenit), 0 },
+            { Math.Cos(parallelepiped.Zenit), -Math.Sin(parallelepiped.Zenit), 0 },
+            { Math.Sin(parallelepiped.Zenit), Math.Cos(parallelepiped.Zenit), 0 },
             { 0, 0, 1 }
         });
 		
