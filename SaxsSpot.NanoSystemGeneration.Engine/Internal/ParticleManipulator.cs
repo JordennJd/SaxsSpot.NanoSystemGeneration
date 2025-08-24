@@ -187,7 +187,7 @@ internal static  class ParticleManipulator
 	private static readonly Random random = new();
 	private static readonly float[] signs = { 1, -1 };
 	
-	public static void ChangePosition(Particle particle, in float radius)
+	public static void ChangePosition(Particle particle, in double radius)
 	{
 		var x = GeneratePositiveRandomDoubleLessThenRadius(radius);
 		var y = GeneratePositiveRandomDoubleLessThenRadius(radius);
@@ -203,8 +203,8 @@ internal static  class ParticleManipulator
 		return signs[random.Next(1)] * random.NextSingle() * radius;
 	}
 	
-	private static float GeneratePositiveRandomDoubleLessThenRadius(in float radius)
+	private static float GeneratePositiveRandomDoubleLessThenRadius(in double radius)
 	{
-		return (random.NextSingle() - 0.5f) * radius;
+		return (float)radius * (random.NextSingle() - 0.5f) ;
 	}
 }

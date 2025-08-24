@@ -79,9 +79,9 @@ public static class NanoSystemValidator
             {
                 vector = Vector<float>.Build.DenseOfArray(new float[]
                 {
-                    (random.NextSingle() * 2 - 1) * zone.GlobalSize,
-                    (random.NextSingle() * 2 - 1) * zone.GlobalSize,
-                    (random.NextSingle() * 2 - 1) * zone.GlobalSize
+                    (random.NextSingle() * 2 - 1) * (float)zone.GlobalSize,
+                    (random.NextSingle() * 2 - 1) * (float)zone.GlobalSize,
+                    (random.NextSingle() * 2 - 1) * (float)zone.GlobalSize
                 });
             }
             else
@@ -97,7 +97,7 @@ public static class NanoSystemValidator
                     });
                 } while (point.L2Norm() > 1);
 
-                vector = point * zone.GlobalSize;
+                vector = point * (float)zone.GlobalSize;
             }
 
             list.Add(vector);

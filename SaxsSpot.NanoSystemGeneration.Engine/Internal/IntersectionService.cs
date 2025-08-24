@@ -250,7 +250,7 @@ internal static class IntersectionService
 		}
 	}
 
-	public static bool IsParallelepipedInBoundsOfCubeZone(float globalSize, Parallelepiped parallelepiped)
+	public static bool IsParallelepipedInBoundsOfCubeZone(double globalSize, Parallelepiped parallelepiped)
 	{
 		var par = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(parallelepiped);
 		
@@ -260,7 +260,7 @@ internal static class IntersectionService
 		       && IsVectorInBoundsCube(par.C1, globalSize) && IsVectorInBoundsCube(par.D1, globalSize);
 	}
 	
-	public static bool IsParallelepipedInBoundsOfSphereZone(float globalRadius, Parallelepiped parallelepiped)
+	public static bool IsParallelepipedInBoundsOfSphereZone(double globalRadius, Parallelepiped parallelepiped)
 	{
 		var par = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(parallelepiped);
 
@@ -271,12 +271,12 @@ internal static class IntersectionService
 		       && IsVectorInBoundsSphere(par.C1, globalRadius) && IsVectorInBoundsSphere(par.D1, globalRadius);
 	}
 
-	public static bool IsSphereInBoundsOfSphereZone(float globalRadius, Sphere sphere)
+	public static bool IsSphereInBoundsOfSphereZone(double globalRadius, Sphere sphere)
 	{
 		return sphere.Radius + Sqrt(Pow(sphere.X, 2) + Pow(sphere.Y, 2) + Pow(sphere.Z, 2)) <= globalRadius;
 	}
 	
-	public static bool IsSphereInBoundsOfCubeZone(float globalRadius, Sphere sphere)
+	public static bool IsSphereInBoundsOfCubeZone(double globalRadius, Sphere sphere)
 	{
 		var halfExtent = globalRadius / 2;
 
@@ -305,14 +305,14 @@ internal static class IntersectionService
 		}
 	}
 	
-	private static bool IsVectorInBoundsCube(Vector<float> vector, float globalSize)
+	private static bool IsVectorInBoundsCube(Vector<float> vector, double globalSize)
 	{
 		return vector[0] <= globalSize / 2 && vector[0] >= -globalSize / 2 &&
 		       vector[1] <= globalSize / 2 && vector[1] >= -globalSize / 2 &&
 		       vector[2] <= globalSize / 2 && vector[2] >= -globalSize / 2;
 	}
 	
-	private static bool IsVectorInBoundsSphere(Vector<float> vector, float radius)
+	private static bool IsVectorInBoundsSphere(Vector<float> vector, double radius)
 	{
 		return vector[0]*vector[0] + vector[1]*vector[1] + vector[2]*vector[2] <= radius * radius;
 	}

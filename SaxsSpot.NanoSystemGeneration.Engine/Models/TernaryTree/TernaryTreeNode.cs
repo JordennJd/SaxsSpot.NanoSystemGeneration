@@ -13,10 +13,10 @@ public class TernaryTreeNode
     private TernaryTreeNode? _parent;
     private IList<TernaryTreeNode?> _neighbors = new List<TernaryTreeNode?>();
 
-    public TernaryTreeNode(float minNodeSize, float size, TernaryNodeCoordinates? cellCoordinates = null, TernaryTreeNode? parent = null)
+    public TernaryTreeNode(float minNodeSize, double size, TernaryNodeCoordinates? cellCoordinates = null, TernaryTreeNode? parent = null)
     {
         _cellCoordinates = cellCoordinates ?? new TernaryNodeCoordinates(0,0,0);
-        _size = size;
+        _size = (float)size;
         _parent = parent;
 
         if (size / 3 < minNodeSize)
@@ -24,8 +24,8 @@ public class TernaryTreeNode
             return;
         }
 
-        float childSize = size / 3;
-        float offset = size / 3;
+        float childSize = _size / 3;
+        float offset = _size / 3;
 
         _children = new List<TernaryTreeNode>();
 

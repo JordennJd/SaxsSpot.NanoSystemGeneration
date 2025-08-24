@@ -131,11 +131,11 @@ public class NanoSystemGenerator
 			_particles = newExcessedSystem;
 			
 			var globalCubeSize =
-				MathF.Pow(newExcessedSystem.Sum(x => x.GetVolume())
+				Math.Pow(newExcessedSystem.Sum(x => x.GetVolume())
 				          / (_generationParameters.Excess * _generationParameters.NumericalConcentration!.Value),
-					1.0f / 3.0f);
+					1.0d / 3.0d);
 			
-			_excessedGenerationZone = new GenerationZone(globalCubeSize / (2.0f * (1f + c)), GenerationZoneForm.Sphere);
+			_excessedGenerationZone = new GenerationZone(globalCubeSize / (2.0d * (1d + c)), GenerationZoneForm.Sphere);
 			_generationZone = new GenerationZone(globalCubeSize, GenerationZoneForm.Cube);
 			
 			return Task.FromResult(_generationZone);
@@ -143,7 +143,7 @@ public class NanoSystemGenerator
 
 		if (_generationParameters.NumericalConcentration is not null and not 0)
 		{
-			var size = MathF.Pow(volumeSum / _generationParameters.NumericalConcentration.Value, 1f/3f);
+			var size = Math.Pow(volumeSum / _generationParameters.NumericalConcentration.Value, 1d/3d);
 			_generationZone = new GenerationZone(size, GenerationZoneForm.Cube);
 			return Task.FromResult(_generationZone);
 		}

@@ -6,11 +6,11 @@ public record Sphere(float Radius, float X = 0, float Y = 0, float Z = 0) : Part
 {
     public override ParticleKind ParticleKind { get; init; } = ParticleKind.Sphere;
     
-    public override float GetVolume()
+    public override double GetVolume()
     {
         if(_volume == -1)
         {
-            _volume = MathF.Pow(Radius, 3) * MathF.PI * 4f / 3f;
+            _volume = Math.Pow(Radius, 3) * Math.PI * 4d / 3d;
         }
 		
         return _volume;

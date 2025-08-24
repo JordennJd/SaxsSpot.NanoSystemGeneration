@@ -4,13 +4,13 @@ namespace SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
 
 public record SphereGenerationParameters(
     int Count,
-    float? NumericalConcentration,
-    float? GlobalSize,
+    double? NumericalConcentration,
+    double? GlobalSize,
     float MinSize,
     float MaxSize,
     float Theta,
     float K,
-    float Excess)
+    double Excess)
     : ParticleGenerationParameters(Count, NumericalConcentration, GlobalSize, MinSize, MaxSize, Theta, K, Excess)
 {
     public override ParticleKind GetParticleKind()

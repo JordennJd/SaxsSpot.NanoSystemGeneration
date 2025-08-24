@@ -14,7 +14,7 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
     
     public override ParticleKind ParticleKind { get; init; } = ParticleKind.Parallelepiped;
     
-    public override float GetVolume()
+    public override double GetVolume()
     {
         if(_volume == -1)
         {

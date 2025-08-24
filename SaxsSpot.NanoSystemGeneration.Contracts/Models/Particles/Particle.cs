@@ -17,9 +17,9 @@ public abstract record Particle(float X, float Y, float Z)
 
     public float Z { get; protected set; } = Z;
     
-    protected float _volume = -1;
+    protected double _volume = -1;
 
-    public abstract float GetVolume();
+    public abstract double GetVolume();
     
     public abstract float GetDiameter();
 
