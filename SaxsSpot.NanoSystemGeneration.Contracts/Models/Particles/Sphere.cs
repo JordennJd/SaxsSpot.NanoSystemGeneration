@@ -1,3 +1,4 @@
+using System.Globalization;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 
 namespace SaxsSpot.NanoSystemGeneration.Contracts.Models;
@@ -32,6 +33,8 @@ public record Sphere(float Radius, float X = 0, float Y = 0, float Z = 0) : Part
     
     public override string ToString()
     {
-        return $"{Radius} {X} {Y} {Z}";
+        return string.Format(CultureInfo.InvariantCulture, 
+            "{0} {1} {2} {3}", 
+            Radius, X, Y, Z);
     }
 }

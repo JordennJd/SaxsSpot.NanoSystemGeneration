@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Numerics;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 
@@ -44,7 +45,9 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
 
     public override string ToString()
     {
-        return $"{A} {E} {X} {Y} {Z} {Phi} {Theta} {Zenit}";
+        return string.Format(CultureInfo.InvariantCulture, 
+            "{0} {1} {2} {3} {4} {5} {6} {7}", 
+            A, E, X, Y, Z, Phi, Theta, Zenit);
     }
     
     public Vector3[] GetVertices()
