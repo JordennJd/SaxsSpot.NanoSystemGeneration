@@ -1,5 +1,7 @@
-﻿using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
+﻿using NUnit.Framework.Internal;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Engine.Services;
 
 namespace SaxsSpot.NanoSystemGeneration.Tests;
@@ -7,8 +9,8 @@ namespace SaxsSpot.NanoSystemGeneration.Tests;
 public class ParticleGenerationTests
 {
     [Test]
-    [TestCase(1f, 10000, 0.2f, null, 2f, 6f, 1f, 6f, 1.1f,
-        ParticleKind.Parallelepiped)]
+    [TestCase(1f, 100000, 0.4f, null, 2f, 6f, 0.4f, 3f, 1.0f,
+        ParticleKind.Sphere)]
     // [TestCase(0.5f, 10000, 0.4f, null, 2f, 6f, 1f, 3f, 1.1f,
     //     ParticleKind.Sphere)]
     public async Task SuccessGenerationCases(
@@ -39,10 +41,7 @@ public class ParticleGenerationTests
         var system = await nanoSystemGenerator.GenerateSystem();
         var generationZone = await nanoSystemGenerator.GetGenerationZone();
         var progress = new Progress<float>();
-
-        var progressLog = "C:\\Projects\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\Progress";
-        File.Delete(progressLog);
-        File.Create(progressLog);
+        
         progress.ProgressChanged += (sender, f) =>
         {
             if (TestContext.CurrentContext.Random.Next(1, 200) == 1)
@@ -60,14 +59,14 @@ public class ParticleGenerationTests
         var isGenerationZoneValid =
             NanoSystemValidator.ValidateGenerationZone(await nanoSystemGenerator.GetGenerationZone(),
                 distributeParticles);
-        var isIntersectionsValid =
-            NanoSystemValidator.ValidateSystemIntersections(distributeParticles,
+        var (isIntersectionsValid, intersectionCount) = (true, 0);
+        (isIntersectionsValid, intersectionCount) = NanoSystemValidator.ValidateSystemIntersections(distributeParticles,
                 await nanoSystemGenerator.GetGenerationZone());
-        
+
         TestContext.Progress.WriteLine("Writing result to log...");
 
-        await File.AppendAllLinesAsync("C:\\Projects\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\log",
-        [$"time: {startTime - endTime} particleKind: {particleKind} count: {count} nc: {numericalConcentration} gs: {globalSize} excess: {excess} genZone: {(isGenerationZoneValid ? "+" : "-")} intersections: {(isIntersectionsValid ? "+" : "-")}",
+        await File.AppendAllLinesAsync("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/log",
+        [$"time: {startTime - endTime} particleKind: {particleKind} count: {count} nc: {numericalConcentration} gs: {globalSize} excess: {excess} genZone: {(isGenerationZoneValid ? "+" : "-")} intersections: {(isIntersectionsValid ? "+" : "-")} ({intersectionCount})",
             "parameters:", $"realNc: {distributeParticles.Sum(x => x.GetVolume()) / (await nanoSystemGenerator.GetGenerationZone()).GetVolume()} realCount: {distributeParticles.Count}"]);
         
         Assert.Multiple(() =>

@@ -85,7 +85,6 @@ public class TernaryTreeNode
 
         if (nearParticles.Any(particleToCheck => particleToCheck != particle && particleToCheck.IsIntersect(particle, info: info)))
         {
-            particle.IntersectionMark += "1";
             info?.IncrementFirstNodeIntersectionFindTimes();
             return false;
         }
@@ -93,14 +92,12 @@ public class TernaryTreeNode
                 .Where(node => node?.IsParticleInside(particle) is true)
                 .SelectMany(x => x.GetParticles()).Any(particleToCheck => particleToCheck != particle && particleToCheck.IsIntersect(particle, isNeighbors:true, info)))
         {
-            particle.IntersectionMark += "2";
             info?.IncrementTotalNeighborsNodesCheckedCount();
             return false;
         }
         
         deepestNodeForParticle._particles.Add(particle);
         
-        particle.IntersectionMark += "3";
         return true;
     }
 
@@ -149,7 +146,6 @@ public class TernaryTreeNode
         {
             if (!IntersectionService.IsInterCenterDistanceMoreThenDiagonalCheckForNodes((Parallelepiped)particle,  _cubeBound))
             {
-                ((Parallelepiped)particle).IsParticleInside = true;
                 return true;
             }
 
@@ -158,7 +154,11 @@ public class TernaryTreeNode
 
         if (particle.ParticleKind == ParticleKind.Sphere)
         {
-            return true;
+            if (!IntersectionService.IsInterCenterDistanceMoreThenDiagonalCheckForNodesSphere((Sphere)particle,  _cubeBound))
+            {
+                return true;
+            }
+            return false;
         }
 
         throw new NotSupportedException("not support for this kind of particle");

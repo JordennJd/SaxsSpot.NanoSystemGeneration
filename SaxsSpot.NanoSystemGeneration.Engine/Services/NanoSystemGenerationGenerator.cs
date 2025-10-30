@@ -47,7 +47,7 @@ public class NanoSystemGenerator
 			.OrderBy(p => p.GetVolume())
 			.Reverse()
 			.ToList();
-
+		var info = new GenerationInfo();
 		try
 		{
 			var handledParticles = 0;
@@ -61,17 +61,12 @@ public class NanoSystemGenerator
 				{
 					ParticleManipulator.ChangePosition(particle, _generationZone.GlobalSize);
  
-					while (!IntersectionService.IsParticleInsideZone(particle, _generationZone))
+					if (!IntersectionService.IsParticleInsideZone(particle, _generationZone))
 					{
-						ParticleManipulator.ChangePosition(particle, _generationZone.GlobalSize);
-						i++;
-						if (i > attempCount)
-						{
-							break;
-						}
+						continue;
 					}
 
-					var isAdded = tree.TryInsertParticle(particle);
+					var isAdded = tree.TryInsertParticle(particle, info);
 
 					if (isAdded)
 					{

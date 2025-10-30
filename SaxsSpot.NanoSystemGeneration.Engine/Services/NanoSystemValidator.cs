@@ -29,7 +29,7 @@ public static class NanoSystemValidator
     }
 
     
-    public static bool ValidateSystemIntersections(IList<Particle> particles, GenerationZone zone)
+    public static (bool, int) ValidateSystemIntersections(IList<Particle> particles, GenerationZone zone)
     {
         var randomVectors = GenerateRandomVectors(100000, zone);
         var intersects = new List<(List<Particle>, Vector<float>)>();
@@ -49,13 +49,13 @@ public static class NanoSystemValidator
         {
             foreach (var intersected in intersects)
             {
-                File.AppendAllLines("C:\\Projects\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\intersections", 
+                File.AppendAllLines("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/intersections", 
                     [string.Join("\n", intersected.Item1.Select(x => x.ToString())), intersected.Item2.ToString()]);
             }
-            return false;
+            return (false, intersects.Count);
         }
 
-        return true;
+        return (true, 0);
     }
     
     public static List<(List<Particle>, Vector<float>)> GetSystemIntersections(IList<Particle> particles, GenerationZone zone)

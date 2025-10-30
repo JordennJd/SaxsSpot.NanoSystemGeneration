@@ -26,7 +26,6 @@ internal static class IntersectionService
 			newPar.Borders = null;
 			newPar.IsParticleInside = false;
 			info?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesPositive();
-			newPar.IntersectionMark += "a";
 			return false;
 		}
 		
@@ -39,7 +38,6 @@ internal static class IntersectionService
 			newPar.Borders = null;
 			newPar.IsParticleInside = false;
 			info?.IncrementIsInterCenterDistanceLessThenSidesCheckTimesPositive();
-			newPar.IntersectionMark += "4";
 			return true;
 		}
 		
@@ -55,7 +53,6 @@ internal static class IntersectionService
 			newPar.Edges = null;
 			newPar.Borders = null;
 			newPar.IsParticleInside = false;
-			newPar.IntersectionMark += "5";
 			return true;
 		}
 		
@@ -71,7 +68,6 @@ internal static class IntersectionService
 			newPar.Edges = null;
 			newPar.Borders = null;
 			newPar.IsParticleInside = false;
-			newPar.IntersectionMark += "6";
 			return true;
 		}
 		
@@ -82,11 +78,9 @@ internal static class IntersectionService
 			newPar.IsEdgesRotated = false;
 			newPar.Edges = null;
 			newPar.Borders = null;
-			newPar.IntersectionMark += "7";
 			return true;
 		}
 		
-		newPar.IntersectionMark += "b";
 		return false;
 	}
     
@@ -248,6 +242,18 @@ internal static class IntersectionService
 		return interCenterDistance > (oldDiagonal / 2 + newDiagonal / 2) + buffer;
 	}
 	
+	public static bool IsInterCenterDistanceMoreThenDiagonalCheckForNodesSphere(Sphere oldPar, Parallelepiped newPar)
+	{
+		var interCenterDistance =
+			Sqrt(Pow(oldPar.X - newPar.X, 2) + Pow(oldPar.Y - newPar.Y, 2) + Pow(oldPar.Z - newPar.Z, 2));
+
+		var oldDiagonal = oldPar.Radius;
+		var newDiagonal = Sqrt(Pow(newPar.A, 2) + Pow(newPar.A, 2) + Pow(newPar.A * newPar.E, 2));
+
+		var buffer = Min(oldDiagonal, newDiagonal/2) / 1.5f;
+
+		return interCenterDistance > (oldDiagonal + newDiagonal / 2) + buffer;
+	}
 	
 	/// <summary>
 	///     Checks if the inter-center distance between two parallelepipeds is smaller than the sides sum check.
