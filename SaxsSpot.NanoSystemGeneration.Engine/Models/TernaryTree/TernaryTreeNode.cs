@@ -1,4 +1,5 @@
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Engine.Internal;
 using SaxsSpot.NanoSystemGeneration.Engine.Models.Cells;
 
@@ -12,13 +13,14 @@ public class TernaryTreeNode
     private IList<TernaryTreeNode>? _children;
     private TernaryTreeNode? _parent;
     private IList<TernaryTreeNode?> _neighbors = new List<TernaryTreeNode?>();
+    private readonly Parallelepiped _cubeBound;
 
     public TernaryTreeNode(float minNodeSize, double size, TernaryNodeCoordinates? cellCoordinates = null, TernaryTreeNode? parent = null)
     {
         _cellCoordinates = cellCoordinates ?? new TernaryNodeCoordinates(0,0,0);
         _size = (float)size;
         _parent = parent;
-
+        _cubeBound = new Parallelepiped(_size, 1, _cellCoordinates!.X, _cellCoordinates.Y, _cellCoordinates.Z);
         if (size / 3 < minNodeSize)
         {
             return;
@@ -75,20 +77,30 @@ public class TernaryTreeNode
         }
     }
 
-    public bool TryInsertParticle(Particle particle)
+    public bool TryInsertParticle(Particle particle, GenerationInfo? info = null)
     {
         TernaryTreeNode deepestNodeForParticle = FindDeepestNodeForParticle(this, particle);
         ArgumentNullException.ThrowIfNull(deepestNodeForParticle, "Particle inbound of generation zone");
         var nearParticles = deepestNodeForParticle.GetParticles();
 
-        if (nearParticles.Any(particle.IsIntersect)
-            || deepestNodeForParticle._neighbors.SelectMany(x => x.GetParticles()).Any(particle.IsIntersect))
+        if (nearParticles.Any(particleToCheck => particleToCheck != particle && particleToCheck.IsIntersect(particle, info: info)))
         {
+            particle.IntersectionMark += "1";
+            info?.IncrementFirstNodeIntersectionFindTimes();
+            return false;
+        }
+        if (deepestNodeForParticle._neighbors
+                .Where(node => node?.IsParticleInside(particle) is true)
+                .SelectMany(x => x.GetParticles()).Any(particleToCheck => particleToCheck != particle && particleToCheck.IsIntersect(particle, isNeighbors:true, info)))
+        {
+            particle.IntersectionMark += "2";
+            info?.IncrementTotalNeighborsNodesCheckedCount();
             return false;
         }
         
         deepestNodeForParticle._particles.Add(particle);
         
+        particle.IntersectionMark += "3";
         return true;
     }
 
@@ -131,6 +143,27 @@ public class TernaryTreeNode
         }
     }
 
+    public bool IsParticleInside(Particle particle)
+    {
+        if (particle.ParticleKind == ParticleKind.Parallelepiped)
+        {
+            if (!IntersectionService.IsInterCenterDistanceMoreThenDiagonalCheckForNodes((Parallelepiped)particle,  _cubeBound))
+            {
+                ((Parallelepiped)particle).IsParticleInside = true;
+                return true;
+            }
+
+            return false;
+        }
+
+        if (particle.ParticleKind == ParticleKind.Sphere)
+        {
+            return true;
+        }
+
+        throw new NotSupportedException("not support for this kind of particle");
+    }
+
     private bool Contains(Particle p)
     {
         float halfSize = _size / 2;
@@ -155,6 +188,11 @@ public class TernaryTreeNode
         {
             GetDeepestNodes(child, result);
         }
+    }
+
+    public Parallelepiped GetCubeBound()
+    {
+        return _cubeBound;
     }
 }
 

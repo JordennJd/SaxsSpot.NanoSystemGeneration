@@ -77,13 +77,13 @@ public class CellManager<T> where T : Cell
 	{
 		var cell = FindCellForParallelepiped(particle);
 
-		if (cell.GetParticles().Any(particle.IsIntersect) || 
-		    GetNeighbors(cell)
-			    .SelectMany(x => x.GetParticles())
-			    .Any(particle.IsIntersect))
-		{
-			return false;
-		}
+		// if (cell.GetParticles().Any(particle.IsIntersect) || 
+		//     GetNeighbors(cell)
+		// 	    .SelectMany(x => x.GetParticles())
+		// 	    .Any(particle.IsIntersect))
+		// {
+		// 	return false;
+		// }
 
 		cell.Add(particle);
 		

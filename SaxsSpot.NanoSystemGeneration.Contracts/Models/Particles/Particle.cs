@@ -28,4 +28,6 @@ public abstract record Particle(float X, float Y, float Z)
     public abstract void ChangePosition(float x , float y, float z, float fi = 0, float theta = 0, float zenit = 0);
     
     public abstract float GetParticleSize();
+
+    public string IntersectionMark = "";
 }

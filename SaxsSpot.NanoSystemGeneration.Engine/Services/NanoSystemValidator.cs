@@ -19,7 +19,7 @@ public static class NanoSystemValidator
 
                 if (p1.IsIntersect(p2))
                 {
-                    File.WriteAllLines("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/intersections", [p1.ToString(), p2.ToString()]);
+                    File.WriteAllLines("C:\\Projects\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\intersections", [p1.ToString(), p2.ToString()]);
                     return false;
                 }
             }
@@ -32,7 +32,7 @@ public static class NanoSystemValidator
     public static bool ValidateSystemIntersections(IList<Particle> particles, GenerationZone zone)
     {
         var randomVectors = GenerateRandomVectors(100000, zone);
-
+        var intersects = new List<(List<Particle>, Vector<float>)>();
         foreach (var randomVector in randomVectors)
         {
             var intersected = particles
@@ -41,13 +41,40 @@ public static class NanoSystemValidator
                 .ToList();
             if (intersected.Count > 1)
             {
-                File.WriteAllLines("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/intersections", 
-                    [string.Join("\n", intersected.Select(x => x.ToString())), randomVector.ToString()]);
-                return false;
+                intersects.Add((intersected, randomVector));
             }
         }
 
+        if (intersects.Any(intersected => intersected.Item1.Count > 1))
+        {
+            foreach (var intersected in intersects)
+            {
+                File.AppendAllLines("C:\\Projects\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\intersections", 
+                    [string.Join("\n", intersected.Item1.Select(x => x.ToString())), intersected.Item2.ToString()]);
+            }
+            return false;
+        }
+
         return true;
+    }
+    
+    public static List<(List<Particle>, Vector<float>)> GetSystemIntersections(IList<Particle> particles, GenerationZone zone)
+    {
+        var randomVectors = GenerateRandomVectors(100000, zone);
+        var intersects = new List<(List<Particle>, Vector<float>)>();
+        foreach (var randomVector in randomVectors)
+        {
+            var intersected = particles
+                .AsParallel()
+                .Where(x => IntersectionService.IsPointInsideParticle(randomVector, x))
+                .ToList();
+            if (intersected.Count > 1)
+            {
+                intersects.Add((intersected, randomVector));
+            }
+        }
+
+        return intersects;
     }
 
     public static bool ValidateGenerationZone(GenerationZone zone, IList<Particle> particles)

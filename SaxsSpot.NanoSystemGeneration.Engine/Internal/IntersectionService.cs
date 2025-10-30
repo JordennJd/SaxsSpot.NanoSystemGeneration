@@ -3,7 +3,7 @@ using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
-using static System.Math;
+using static System.MathF;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
@@ -15,33 +15,81 @@ internal static class IntersectionService
 	/// <param name="newPar">The new parallelepiped.</param>
 	/// <param name="density">The density of the points to check.</param>
 	/// <returns>True if the two parallelepipeds intersect, false otherwise.</returns>
-	public static bool IsIntersect(Parallelepiped oldPar, Parallelepiped newPar, int density = 10)
+	public static bool IsIntersect(Parallelepiped oldPar, Parallelepiped newPar, int density = 10, bool isNeighbors = false, GenerationInfo? info = null)
 	{
-		if (IsInterCenterDistanceMoreThenDiagonalCheck(oldPar, newPar)) return false;
-		if (IsInterCenterDistanceLessThenSidesCheck(oldPar, newPar)) return true;
+		info?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesTotal();
+		if (IsInterCenterDistanceMoreThenDiagonalCheck(oldPar, newPar))
+		{
+			newPar.BackRotateMatrix = null;
+			newPar.IsEdgesRotated = false;
+			newPar.Edges = null;
+			newPar.Borders = null;
+			newPar.IsParticleInside = false;
+			info?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesPositive();
+			newPar.IntersectionMark += "a";
+			return false;
+		}
 		
-		var oldCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(oldPar);
-		// var oldCord = oldPar.Coordinates.Copy();
-		ParallelepipedManipulator.DoParallelepipedTransform(ref oldCord, -newPar.X, -newPar.Y, -newPar.Z);
-		ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, newPar.Phi, newPar.Theta, newPar.Zenit);
-		if (ElementaryIntersectCheckOnlyBorders(newPar, oldCord)) return true;
+		info?.IncrementIsInterCenterDistanceLessThenSidesCheckTimesTotal();
+		if (IsInterCenterDistanceLessThenSidesCheck(oldPar, newPar))
+		{
+			newPar.BackRotateMatrix = null;
+			newPar.IsEdgesRotated = false;
+			newPar.Edges = null;
+			newPar.Borders = null;
+			newPar.IsParticleInside = false;
+			info?.IncrementIsInterCenterDistanceLessThenSidesCheckTimesPositive();
+			newPar.IntersectionMark += "4";
+			return true;
+		}
 		
-		var surfacesOld = ParallelepipedCoverer.FillBorders(oldCord, density);
-		if (HardIntersectCheckOnlyBorders(newPar, surfacesOld)) return true;
-		
-		var newCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(newPar);
+		info?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesTotal();
+		var newCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(newPar).Copy();
 		ParallelepipedManipulator.DoParallelepipedTransform(ref newCord, -oldPar.X, -oldPar.Y, -oldPar.Z);
-		ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, oldPar.Phi, oldPar.Theta, oldPar.Zenit);
-		if (ElementaryIntersectCheckOnlyBorders(oldPar, newCord)) return true;
-
-		// var surfacesNew = ParallelepipedCoverer.FillBorders(newCord, density);
-		// if (HardIntersectCheckOnlyBorders(oldPar, surfacesNew)) return true;
+		ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, oldPar);
+		if (ElementaryIntersectCheckOnlyBorders(oldPar, newCord))
+		{
+			info?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesPositive();
+			newPar.BackRotateMatrix = null;
+			newPar.IsEdgesRotated = false;
+			newPar.Edges = null;
+			newPar.Borders = null;
+			newPar.IsParticleInside = false;
+			newPar.IntersectionMark += "5";
+			return true;
+		}
 		
-		// newCord.CachedBorders = surfacesOld;
-		// newPar.Coordinates = newCord;
+		info?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesTotal();
+		var oldCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(oldPar).Copy();
+		ParallelepipedManipulator.DoParallelepipedTransform(ref oldCord, -newPar.X, -newPar.Y, -newPar.Z);
+		ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, newPar);
+		if (ElementaryIntersectCheckOnlyBorders(newPar, oldCord))
+		{
+			info?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesPositive();
+			newPar.BackRotateMatrix = null;
+			newPar.IsEdgesRotated = false;
+			newPar.Edges = null;
+			newPar.Borders = null;
+			newPar.IsParticleInside = false;
+			newPar.IntersectionMark += "6";
+			return true;
+		}
 		
+		var surfacesOld = ParallelepipedCoverer.FillBorders(oldPar, oldCord, density);
+		if (HardIntersectCheckOnlyBorders(newPar, surfacesOld))
+		{
+			newPar.BackRotateMatrix = null;
+			newPar.IsEdgesRotated = false;
+			newPar.Edges = null;
+			newPar.Borders = null;
+			newPar.IntersectionMark += "7";
+			return true;
+		}
+		
+		newPar.IntersectionMark += "b";
 		return false;
 	}
+    
 
 	public static IEnumerable<Parallelepiped> FindParallelepipedsByPoint(Vector<float> vector,
 		IEnumerable<Parallelepiped> parallelepipeds)
@@ -161,21 +209,11 @@ internal static class IntersectionService
 				return true;
 		return false;
 	}
-
-	private static bool ElementaryIntersectCheck(Parallelepiped par, List<List<List<Vector<float>>>> Surfaces)
-	{
-		foreach (var Planes in Surfaces)
-			if (IsVectorInBounds(Planes[0][0], par) || IsVectorInBounds(Planes[^1][0], par)
-													|| IsVectorInBounds(Planes[0][^1], par) ||
-													IsVectorInBounds(Planes[^1][^1], par))
-				return true;
-		return false;
-	}
-
+	
 	private static bool ElementaryIntersectCheckOnlyBorders(Parallelepiped par, ParallelepipedCoordinates cords)
 	{
 		foreach (var edge in cords.ForAll())
-			if (IsVectorInBounds(edge, par) || IsVectorInBounds(edge, par))
+			if (IsVectorInBounds(edge, par))
 				return true;
 		return false;
 	}
@@ -189,12 +227,25 @@ internal static class IntersectionService
 	public static bool IsInterCenterDistanceMoreThenDiagonalCheck(Parallelepiped oldPar, Parallelepiped newPar)
 	{
 		var interCenterDistance =
-			Math.Sqrt(Math.Pow(oldPar.X - newPar.X, 2) + Math.Pow(oldPar.Y - newPar.Y, 2) + Math.Pow(oldPar.Z - newPar.Z, 2));
+			Sqrt(Pow(oldPar.X - newPar.X, 2) + Pow(oldPar.Y - newPar.Y, 2) + Pow(oldPar.Z - newPar.Z, 2));
 
-		var oldDiagonal = Math.Sqrt(Math.Pow(oldPar.A, 2) + Math.Pow(oldPar.A, 2) + Math.Pow(oldPar.A * oldPar.E, 2));
-		var newDiagonal = Math.Sqrt(Math.Pow(newPar.A, 2) + Math.Pow(newPar.A, 2) + Math.Pow(newPar.A * newPar.E, 2));
+		var oldDiagonal = Sqrt(Pow(oldPar.A, 2) + Pow(oldPar.A, 2) + Pow(oldPar.A * oldPar.E, 2));
+		var newDiagonal = Sqrt(Pow(newPar.A, 2) + Pow(newPar.A, 2) + Pow(newPar.A * newPar.E, 2));
 
 		return interCenterDistance > oldDiagonal / 2 + newDiagonal / 2;
+	}
+	
+	public static bool IsInterCenterDistanceMoreThenDiagonalCheckForNodes(Parallelepiped oldPar, Parallelepiped newPar)
+	{
+		var interCenterDistance =
+			Sqrt(Pow(oldPar.X - newPar.X, 2) + Pow(oldPar.Y - newPar.Y, 2) + Pow(oldPar.Z - newPar.Z, 2));
+
+		var oldDiagonal = Sqrt(Pow(oldPar.A, 2) + Pow(oldPar.A, 2) + Pow(oldPar.A * oldPar.E, 2));
+		var newDiagonal = Sqrt(Pow(newPar.A, 2) + Pow(newPar.A, 2) + Pow(newPar.A * newPar.E, 2));
+
+		var buffer = Max(oldDiagonal, newDiagonal);
+		
+		return interCenterDistance > (oldDiagonal / 2 + newDiagonal / 2) + buffer;
 	}
 	
 	
@@ -218,15 +269,42 @@ internal static class IntersectionService
 	/// <summary>
 	/// Checks if the inter-center distance between two parallelepipeds is smaller than the sides sum check.
 	/// </summary>
-	/// <param name="oldPar">The old parallelepiped.</param>
-	/// <param name="newPar">The new parallelepiped.</param>
+	/// <param name="s1"></param>
+	/// <param name="s2"></param>
 	/// <returns>True if the inter-center distance is greater than the diagonal check, false otherwise.</returns>
-	public static bool IsSphereIntersect(Sphere s1, Sphere s2)
+	public static bool IsSphereIntersect(Sphere s1, Sphere s2, GenerationInfo? info = null)
 	{
 		var interCenterDistance =
-			Math.Sqrt(Math.Pow(s1.X - s2.X, 2) + Math.Pow(s1.Y - s2.Y, 2) + Math.Pow(s1.Z - s2.Z, 2));
+			Sqrt(Pow(s1.X - s2.X, 2) + Pow(s1.Y - s2.Y, 2) + Pow(s1.Z - s2.Z, 2));
 
+		info?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesTotal();
+		if (interCenterDistance < s1.Radius + s2.Radius)
+		{
+			info?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesPositive();
+			return true;
+		}
+		
 		return interCenterDistance < s1.Radius + s2.Radius;
+	}
+	
+	public static bool IsSphereInBoundCube(Sphere s1, Parallelepiped cubeZone)
+	{
+		float sphereX = s1.X;
+		float sphereY = s1.Y;
+		float sphereZ = s1.Z;
+		float radius = s1.Radius;
+    
+		float cubeX = cubeZone.X;
+		float cubeY = cubeZone.Y;
+		float cubeZ = cubeZone.Z;
+		float cubeA = cubeZone.A;
+		float cubeE = cubeZone.E;
+    
+		bool insideX = (sphereX - radius >= cubeX - cubeA/2) && (sphereX + radius <= cubeX + cubeA/2);
+		bool insideY = (sphereY - radius >= cubeY - cubeE/2) && (sphereY + radius <= cubeY + cubeE/2);
+		bool insideZ = (sphereZ - radius >= cubeZ - cubeE/2) && (sphereZ + radius <= cubeZ + cubeE/2);
+    
+		return insideX && insideY && insideZ;
 	}
 
 	public static bool IsParticleInsideZone(Particle particle, GenerationZone zone)
@@ -253,11 +331,18 @@ internal static class IntersectionService
 	public static bool IsParallelepipedInBoundsOfCubeZone(double globalSize, Parallelepiped parallelepiped)
 	{
 		var par = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(parallelepiped);
-		
-		return IsVectorInBoundsCube(par.A, globalSize) && IsVectorInBoundsCube(par.B, globalSize) && IsVectorInBoundsCube(par.C, globalSize)
-		       && IsVectorInBoundsCube(par.D, globalSize) && IsVectorInBoundsCube(par.A1, globalSize) &&
-		       IsVectorInBoundsCube(par.B1, globalSize)
-		       && IsVectorInBoundsCube(par.C1, globalSize) && IsVectorInBoundsCube(par.D1, globalSize);
+		if (IsVectorInBoundsCube(par.A, globalSize) && IsVectorInBoundsCube(par.B, globalSize) &&
+		    IsVectorInBoundsCube(par.C, globalSize)
+		    && IsVectorInBoundsCube(par.D, globalSize) && IsVectorInBoundsCube(par.A1, globalSize) &&
+		    IsVectorInBoundsCube(par.B1, globalSize)
+		    && IsVectorInBoundsCube(par.C1, globalSize) && IsVectorInBoundsCube(par.D1, globalSize))
+		{
+			return true;
+		}
+		parallelepiped.BackRotateMatrix = null;
+		parallelepiped.IsEdgesRotated = false;
+		parallelepiped.Edges = null;
+		return false;
 	}
 	
 	public static bool IsParallelepipedInBoundsOfSphereZone(double globalRadius, Parallelepiped parallelepiped)

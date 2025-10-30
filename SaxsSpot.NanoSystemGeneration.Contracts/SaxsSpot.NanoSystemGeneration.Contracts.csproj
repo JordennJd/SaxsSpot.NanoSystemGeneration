@@ -6,6 +6,7 @@
     <Version></Version>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SaxsSpot.Core.Contracts" Version="2.1.0" />
   </ItemGroup>

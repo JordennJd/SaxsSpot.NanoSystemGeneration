@@ -41,7 +41,7 @@ public class NanoSystemGenerator
 		
 		// var cellManager = new CellManager<InMemoryCell>(_particles, generationZone.GlobalSize);
 		var tree = new TernaryTreeNode(
-			_particles!.MaxBy(x => x.GetDiameter())!.GetDiameter(), _generationZone.GlobalSize);
+			_particles!.MaxBy(x => x.GetDiameter())!.GetDiameter() * 2, _generationZone.GlobalSize);
 		
 		_particles = _particles
 			.OrderBy(p => p.GetVolume())
@@ -51,13 +51,13 @@ public class NanoSystemGenerator
 		try
 		{
 			var handledParticles = 0;
-
+			var attempCount = 100000;
 			foreach (var particle in _particles)
 			{
 				progress?.Report((float)handledParticles / _particles.Count * 100f);
-
 				cancellationToken.ThrowIfCancellationRequested();
-				for (var i = 0; i < 100000; i++)
+
+				for (var i = 0; i < attempCount; i++)
 				{
 					ParticleManipulator.ChangePosition(particle, _generationZone.GlobalSize);
  
@@ -65,6 +65,10 @@ public class NanoSystemGenerator
 					{
 						ParticleManipulator.ChangePosition(particle, _generationZone.GlobalSize);
 						i++;
+						if (i > attempCount)
+						{
+							break;
+						}
 					}
 
 					var isAdded = tree.TryInsertParticle(particle);
@@ -77,6 +81,8 @@ public class NanoSystemGenerator
 				
 				handledParticles++;
 			}
+			
+
 
 			if (_excessedGenerationZone is not null)
 			{

@@ -1,6 +1,7 @@
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Complex32;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
@@ -17,21 +18,21 @@ internal static  class ParallelepipedCoverer
     //     return await FillSurfaceFromCoordinates(par, density);;
     // }
 
-    public static Vector<float>[][] FillBorders(ParallelepipedCoordinates par, int density)
+    public static Vector<float>[][] FillBorders(Parallelepiped par, ParallelepipedCoordinates parcord, int density)
     {
-        Vector<float>[][] matrixOfVectors = new Vector<float>[12][];
-        var border1 = ToLinearVectors(par.A, par.B, density);
-        var border2 = ToLinearVectors(par.A, par.D, density);
-        var border3 = ToLinearVectors(par.A, par.A1, density);
-        var border4 = ToLinearVectors(par.C, par.D, density);
-        var border5 = ToLinearVectors(par.C, par.B, density);
-        var border6 = ToLinearVectors(par.C, par.C1, density);
-        var border7 = ToLinearVectors(par.D1, par.D, density);
-        var border8 = ToLinearVectors(par.D1, par.A1, density);
-        var border9 = ToLinearVectors(par.D1, par.C1, density);
-        var border10 = ToLinearVectors(par.B1, par.A1, density);
-        var border11 = ToLinearVectors(par.B1, par.B, density);
-        var border12 = ToLinearVectors(par.B1, par.C1, density);
+        var borders = new Vector<float>[12][];
+        var border1 = ToLinearVectors(parcord.A, parcord.B, density);
+        var border2 = ToLinearVectors(parcord.A, parcord.D, density);
+        var border3 = ToLinearVectors(parcord.A, parcord.A1, density);
+        var border4 = ToLinearVectors(parcord.C, parcord.D, density);
+        var border5 = ToLinearVectors(parcord.C, parcord.B, density);
+        var border6 = ToLinearVectors(parcord.C, parcord.C1, density);
+        var border7 = ToLinearVectors(parcord.D1, parcord.D, density);
+        var border8 = ToLinearVectors(parcord.D1, parcord.A1, density);
+        var border9 = ToLinearVectors(parcord.D1, parcord.C1, density);
+        var border10 = ToLinearVectors(parcord.B1, parcord.A1, density);
+        var border11 = ToLinearVectors(parcord.B1, parcord.B, density);
+        var border12 = ToLinearVectors(parcord.B1, parcord.C1, density);
         
         //
         //   C+---+D
@@ -41,19 +42,19 @@ internal static  class ParallelepipedCoverer
         // |    |/ 
         // B1+---+A1	
         
-        matrixOfVectors[0] = border1;
-        matrixOfVectors[1] = border2;
-        matrixOfVectors[2] = border3;
-        matrixOfVectors[3] = border4;
-        matrixOfVectors[4] = border5;
-        matrixOfVectors[5] = border6;
-        matrixOfVectors[6] = border7;
-        matrixOfVectors[7] = border8;
-        matrixOfVectors[8] = border9;
-        matrixOfVectors[9] = border10;
-        matrixOfVectors[10] = border11;
-        matrixOfVectors[11] = border12;
-        return matrixOfVectors;
+        borders[0] = border1;
+        borders[1] = border2;
+        borders[2] = border3;
+        borders[3] = border4;
+        borders[4] = border5;
+        borders[5] = border6;
+        borders[6] = border7;
+        borders[7] = border8;
+        borders[8] = border9;
+        borders[9] = border10;
+        borders[10] = border11;
+        borders[11] = border12;
+        return borders;
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Numerics;
+using MathNet.Numerics.LinearAlgebra;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 
 namespace SaxsSpot.NanoSystemGeneration.Contracts.Models;
@@ -7,12 +8,27 @@ namespace SaxsSpot.NanoSystemGeneration.Contracts.Models;
 public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z = 0, float Phi = 0, float Theta = 0,
     float Zenit = 0) : Particle(X, Y, Z)
 {
+    public static Parallelepiped FromString(string par)
+    {
+        var parameters = par.Split().Select(float.Parse).ToList();
+
+        return new Parallelepiped(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4],
+            parameters[5], parameters[6], parameters[7]);
+    }
     public float Phi { get; private set; } = Phi;
     
     public float Theta { get; private set; } = Theta;
     
     public float Zenit { get; private set; } = Zenit;
     
+    public Matrix<float>? BackRotateMatrix;
+    
+    public bool IsParticleInside { get; set; } = false;
+
+
+    public List<MathNet.Numerics.LinearAlgebra.Vector<float>> Edges { get; set; }
+    public bool IsEdgesRotated = false;
+    public MathNet.Numerics.LinearAlgebra.Vector<float>[][] Borders { get; set; } 
     public override ParticleKind ParticleKind { get; init; } = ParticleKind.Parallelepiped;
     
     public override double GetVolume()
@@ -33,6 +49,11 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
 
     public override void ChangePosition(float x, float y, float z, float fi = 0, float theta = 0, float zenit = 0)
     {
+        BackRotateMatrix = null;
+        IsEdgesRotated = false;
+        Edges = null;
+        Borders = null;
+        IsParticleInside = false;
         X = x;
         Y = y;
         Z = z;
