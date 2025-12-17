@@ -1,0 +1,78 @@
+using System.Collections.Concurrent;
+using MathNet.Numerics;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.AnalyzeModels;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
+using SaxsSpot.NanoSystemGeneration.Engine.Internal;
+
+namespace SaxsSpot.NanoSystemGeneration.Engine.Services;
+
+public static class NanosystemAnalyzer
+{
+	public static ICollection<ZoneConcentrationAnalyze> GetNanosystemAnalyze<T>
+		(ICollection<T> particles, GenerationZone generationZone, int zoneCount, int vectorCount) where T : Particle
+    {
+    	var globalZoneRadius = generationZone.GenerationZoneForm == GenerationZoneForm.Cube 
+    		? generationZone.GlobalSize / 2 
+    		: generationZone.GlobalSize;
+
+    	var radii = Generate.LinearSpaced(zoneCount, globalZoneRadius*0.4f, globalZoneRadius);
+	    var zoneThicknesses = new double[radii.Length];
+	    for (int i = 0; i < radii.Length; i++)
+	    {
+		    if (i == 0)
+		    {
+			    zoneThicknesses[i] = radii[i];
+		    }
+		    else
+		    {
+			    zoneThicknesses[i] = radii[i] - radii[i - 1];
+		    }
+	    }
+
+	    var pointsByRadii = radii.Select((radius, index) => new
+	    {
+		    Radius = radius,
+		    ZoneThickness = zoneThicknesses[index],
+		    Points = RandomVectorGenerator.GenerateRandomVectors(
+			    vectorCount / radii.Length, 
+			    generationZone, 
+			    index == 0 ? 0 : radii[index - 1], 
+			    radius
+		    ),
+		    Particles = particles!.Where(particle => 
+				    IntersectionService.IsParticleBelongsZone(particle, radius, zoneThicknesses[index]))
+			    .ToList()
+	    }).ToList();
+
+    	var result = new ConcurrentBag<ZoneConcentrationAnalyze>();
+    	var zoneIndex = 0;
+	    Parallel.ForEach(pointsByRadii.OrderBy(p => p.Radius), new ParallelOptions()
+	    {
+	    }, radiusWithPoints =>
+	    { 
+		    var (radius, points, particlesInBound)
+			    = (radiusWithPoints.Radius, radiusWithPoints.Points, radiusWithPoints.Particles);
+
+
+		    var pointsInParticle = 0f;
+
+		    foreach (var paricle in particlesInBound)
+		    {
+			    foreach (var point in points)
+			    {
+				    if (IntersectionService.IsPointInsideParticle(point, paricle))
+				    {
+					    pointsInParticle++;
+				    }
+			    }
+		    }
+
+		    result.Add(new ZoneConcentrationAnalyze(zoneIndex, pointsInParticle / points.Count()));
+		    zoneIndex++;
+	    });
+    	
+    	return result.OrderBy(x => x.ZoneIndex).ToList();
+    }
+}

@@ -25,4 +25,9 @@
   <ItemGroup>
     <ProjectReference Include="..\SaxsSpot.NanoSystemGeneration.Engine\SaxsSpot.NanoSystemGeneration.Engine.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="log03" />
+    <None Remove="log01" />
+    <None Remove="stuff\analyze_system" />
+  </ItemGroup>
 </Project>

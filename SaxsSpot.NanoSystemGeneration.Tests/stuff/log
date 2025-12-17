@@ -1,0 +1,24 @@
+time: -00:01:08.0725940 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: + (0) classicCheck: +
+parameters:
+realNc: 0,20000000000000023 realCount: 100000
+time: -00:01:07.8837570 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: + (0) classicCheck: +
+parameters:
+realNc: 0,20000000000000015 realCount: 100000
+time: -00:01:07.0856040 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: + (0) classicCheck: +
+parameters:
+realNc: 0,20000000000000018 realCount: 100000
+time: -00:01:08.5525070 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: + (0) classicCheck: +
+parameters:
+realNc: 0,20000000000000018 realCount: 100000
+time: -00:01:07.4279120 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: + (0) classicCheck: +
+parameters:
+realNc: 0,20000000000000018 realCount: 100000
+time: -00:01:14.2485580 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: - (7) classicCheck: +
+parameters:
+realNc: 0,20000000000000018 realCount: 100000
+time: -00:00:59.8911240 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: - (23) classicCheck: +
+parameters:
+realNc: 0,20000000000000018 realCount: 100000
+time: -00:01:22.7616340 particleKind: Parallelepiped count: 100000 nc: 0,2 gs:  excess: 0 genZone: + intersections: - (3) classicCheck: +
+parameters:
+realNc: 0,20000000000000018 realCount: 100000

@@ -6,14 +6,13 @@ namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
 public static class IntersectCheckExtension
 {
 
-    public static bool IsIntersect(this Particle source, Particle particle, bool isNeighbors = false, GenerationInfo? info = null)
+    public static bool IsIntersect(this Sphere source, Sphere particle, bool isNeighbors = false, GenerationInfo? info = null)
     {
-        if (source.ParticleKind == ParticleKind.Parallelepiped)
-            return IntersectionService.IsIntersect((Parallelepiped)source, (Parallelepiped)particle, isNeighbors: isNeighbors, info: info);
-        
-        if (source.ParticleKind == ParticleKind.Sphere)
-            return IntersectionService.IsSphereIntersect(source as Sphere, particle as Sphere, info);
-        
-        throw new ArgumentException("not implement intersection interface");
+        return IntersectionService.IsSphereIntersect(source, particle, info);
+    }
+    
+    public static bool IsIntersect(this Parallelepiped source, Parallelepiped particle, bool isNeighbors = false, GenerationInfo? info = null)
+    {
+        return IntersectionService.IsIntersect(source, particle, isNeighbors: isNeighbors, info: info);
     }
 }

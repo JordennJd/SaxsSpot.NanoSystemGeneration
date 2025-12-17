@@ -10,7 +10,7 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
 {
     public static Parallelepiped FromString(string par)
     {
-        var parameters = par.Split().Select(float.Parse).ToList();
+        var parameters = par.Split().Select(x => float.Parse(x, NumberFormatInfo.InvariantInfo)).ToList();
 
         return new Parallelepiped(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4],
             parameters[5], parameters[6], parameters[7]);

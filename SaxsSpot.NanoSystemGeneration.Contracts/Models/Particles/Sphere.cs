@@ -37,4 +37,25 @@ public record Sphere(float Radius, float X = 0, float Y = 0, float Z = 0) : Part
             "{0} {1} {2} {3}", 
             Radius, X, Y, Z);
     }
+    
+    public string ToStrinOld()
+    {
+        return string.Format(CultureInfo.InvariantCulture, 
+            "{0} {1} {2} {3}", 
+            X, Y, Z, Radius);
+    }
+    
+    public static Sphere FromString(string par)
+    {
+        var parameters = par.Split().Select(float.Parse).ToList();
+
+        return new Sphere(parameters[0], parameters[1], parameters[2], parameters[3]);
+    }
+    
+    public static Sphere FromOldString(string par)
+    {
+        var parameters = par.Split().Select(x => float.Parse(x, NumberFormatInfo.InvariantInfo)).ToList();
+
+        return new Sphere(parameters[3], parameters[1], parameters[2], parameters[0]);
+    }
 }

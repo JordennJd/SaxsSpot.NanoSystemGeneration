@@ -1,21 +1,19 @@
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
-using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Engine.Internal;
-using SaxsSpot.NanoSystemGeneration.Engine.Models.Cells;
 
-namespace SaxsSpot.NanoSystemGeneration.Engine.Models.QuadTree;
+namespace SaxsSpot.NanoSystemGeneration.Engine.Models.TernaryTree;
 
-public class TernaryTreeNode
+public class TernaryTreeNodeSphere
 {
     private TernaryNodeCoordinates _cellCoordinates;
     private float _size;
-    private IList<Particle> _particles = new List<Particle>();
-    private IList<TernaryTreeNode>? _children;
-    private TernaryTreeNode? _parent;
-    private IList<TernaryTreeNode?> _neighbors = new List<TernaryTreeNode?>();
+    private IList<Sphere> _particles = new List<Sphere>();
+    private IList<TernaryTreeNodeSphere>? _children;
+    private TernaryTreeNodeSphere? _parent;
+    private IList<TernaryTreeNodeSphere?> _neighbors = new List<TernaryTreeNodeSphere?>();
     private readonly Parallelepiped _cubeBound;
 
-    public TernaryTreeNode(float minNodeSize, double size, TernaryNodeCoordinates? cellCoordinates = null, TernaryTreeNode? parent = null)
+    public TernaryTreeNodeSphere(float minNodeSize, double size, TernaryNodeCoordinates? cellCoordinates = null, TernaryTreeNodeSphere? parent = null)
     {
         _cellCoordinates = cellCoordinates ?? new TernaryNodeCoordinates(0,0,0);
         _size = (float)size;
@@ -29,7 +27,7 @@ public class TernaryTreeNode
         float childSize = _size / 3;
         float offset = _size / 3;
 
-        _children = new List<TernaryTreeNode>();
+        _children = new List<TernaryTreeNodeSphere>();
 
         for (var x = -1; x <= 1; x++)
         {
@@ -43,14 +41,14 @@ public class TernaryTreeNode
                         _cellCoordinates.Z + z * offset
                     );
 
-                    _children.Add(new TernaryTreeNode(minNodeSize, childSize, childCoord, this));
+                    _children.Add(new TernaryTreeNodeSphere(minNodeSize, childSize, childCoord, this));
                 }
             }
         }
 
         if (parent is null)
         {
-            var deepestNodes = new List<TernaryTreeNode>();
+            var deepestNodes = new List<TernaryTreeNodeSphere>();
             GetDeepestNodes(this, deepestNodes);
 
             foreach (var node in deepestNodes)
@@ -62,6 +60,7 @@ public class TernaryTreeNode
                         for (var z = -1; z <= 1; z++)
                         {
                             var neighbor = deepestNodes.Find(deepNode =>
+                                deepNode != node &&
                                 Math.Abs(node._cellCoordinates.X + x * node._size - deepNode._cellCoordinates.X) <
                                 0.1 &&
                                 Math.Abs(node._cellCoordinates.Y + y * node._size - deepNode._cellCoordinates.Y) <
@@ -77,33 +76,32 @@ public class TernaryTreeNode
         }
     }
 
-    public bool TryInsertParticle(Particle particle, GenerationInfo? info = null)
+    public bool TryInsertParticle(Sphere particle, GenerationInfo? info = null)
     {
-        TernaryTreeNode deepestNodeForParticle = FindDeepestNodeForParticle(this, particle);
-        ArgumentNullException.ThrowIfNull(deepestNodeForParticle, "Particle inbound of generation zone");
-        var nearParticles = deepestNodeForParticle.GetParticles();
+        TernaryTreeNodeSphere deepestNodeSphereForParticle = FindDeepestNodeForParticle(this, particle);
+        var nearParticles = deepestNodeSphereForParticle.GetParticles();
 
-        if (nearParticles.Any(particleToCheck => particleToCheck != particle && particleToCheck.IsIntersect(particle, info: info)))
+        if (nearParticles.Any(particleToCheck => IntersectionService.IsSphereIntersect(particleToCheck, particle, info)))
         {
             info?.IncrementFirstNodeIntersectionFindTimes();
             return false;
         }
-        if (deepestNodeForParticle._neighbors
+        if (deepestNodeSphereForParticle._neighbors
                 .Where(node => node?.IsParticleInside(particle) is true)
-                .SelectMany(x => x.GetParticles()).Any(particleToCheck => particleToCheck != particle && particleToCheck.IsIntersect(particle, isNeighbors:true, info)))
+                .SelectMany(x => x.GetParticles()).Any(particleToCheck => IntersectionService.IsSphereIntersect(particleToCheck, particle, info)))
         {
             info?.IncrementTotalNeighborsNodesCheckedCount();
             return false;
         }
         
-        deepestNodeForParticle._particles.Add(particle);
+        deepestNodeSphereForParticle._particles.Add(particle);
         
         return true;
     }
 
-    public TernaryTreeNode FindDeepestNodeForParticle(TernaryTreeNode root, Particle particle)
+    public TernaryTreeNodeSphere FindDeepestNodeForParticle(TernaryTreeNodeSphere root, Sphere particle)
     {
-        TernaryTreeNode current = root;
+        TernaryTreeNodeSphere current = root;
 
         while (current._children != null)
         {
@@ -125,7 +123,7 @@ public class TernaryTreeNode
         return current;
     }
 
-    public IEnumerable<Particle> GetParticles()
+    public IEnumerable<Sphere> GetParticles()
     {
         foreach (var particle in _particles)
         {
@@ -140,28 +138,24 @@ public class TernaryTreeNode
         }
     }
 
-    public bool IsParticleInside(Particle particle)
+    public bool IsParticleInside(Sphere particle)
     {
-        if (particle.ParticleKind == ParticleKind.Parallelepiped)
+        // if (particle.ParticleKind == ParticleKind.Parallelepiped)
+        // {
+        //     if (!IntersectionService.IsInterCenterDistanceMoreThenDiagonalCheckForNodes((Parallelepiped)particle,  _cubeBound))
+        //     {
+        //         return true;
+        //     }
+        //
+        //     return false;
+        // }
+
+        if (!IntersectionService.IsInterCenterDistanceMoreThenDiagonalCheckForNodesSphere(particle,  _cubeBound))
         {
-            if (!IntersectionService.IsInterCenterDistanceMoreThenDiagonalCheckForNodes((Parallelepiped)particle,  _cubeBound))
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
-
-        if (particle.ParticleKind == ParticleKind.Sphere)
-        {
-            if (!IntersectionService.IsInterCenterDistanceMoreThenDiagonalCheckForNodesSphere((Sphere)particle,  _cubeBound))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        throw new NotSupportedException("not support for this kind of particle");
+        return false;
+        
     }
 
     private bool Contains(Particle p)
@@ -176,7 +170,7 @@ public class TernaryTreeNode
             p.Z <= _cellCoordinates.Z + halfSize;
     }
 
-    private void GetDeepestNodes(TernaryTreeNode current, List<TernaryTreeNode> result)
+    private void GetDeepestNodes(TernaryTreeNodeSphere current, List<TernaryTreeNodeSphere> result)
     {
         if (current._children is null)
         {

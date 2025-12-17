@@ -51,8 +51,7 @@ public class ParallelepipedParticleFactory : ParticleFactory
                 if (!(Math.Abs(min - max) > 0.000001)) 
                     return new Parallelepiped(rawA, epsilon.Value);
                 
-                var scaledA = min + (rawA / (rawA + 1f)) * (max - min);
-                return new Parallelepiped(scaledA, epsilon.Value);
+                return new Parallelepiped(rawA, epsilon.Value);
         }
     }
 }

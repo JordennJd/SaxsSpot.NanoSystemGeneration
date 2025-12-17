@@ -1,9 +1,10 @@
+using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
-using static System.MathF;
+using static Extreme.Mathematics.Elementary;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
@@ -70,21 +71,25 @@ internal static class IntersectionService
 			newPar.IsParticleInside = false;
 			return true;
 		}
-		
-		var surfacesOld = ParallelepipedCoverer.FillBorders(oldPar, oldCord, density);
-		if (HardIntersectCheckOnlyBorders(newPar, surfacesOld))
+
+		if (SAT.IsIntersect(oldPar, newPar))
 		{
-			newPar.BackRotateMatrix = null;
-			newPar.IsEdgesRotated = false;
-			newPar.Edges = null;
-			newPar.Borders = null;
 			return true;
 		}
+		//
+		// var surfacesOld = ParallelepipedCoverer.FillBorders(oldPar, oldCord, density);
+		// if (HardIntersectCheckOnlyBorders(newPar, surfacesOld))
+		// {
+		// 	newPar.BackRotateMatrix = null;
+		// 	newPar.IsEdgesRotated = false;
+		// 	newPar.Edges = null;
+		// 	newPar.Borders = null;
+		// 	return true;
+		// }
 		
 		return false;
 	}
-    
-
+	
 	public static IEnumerable<Parallelepiped> FindParallelepipedsByPoint(Vector<float> vector,
 		IEnumerable<Parallelepiped> parallelepipeds)
 	{
@@ -165,7 +170,7 @@ internal static class IntersectionService
 
 	private static bool IsPointInParallelepipedCheckForCube(Vector<float> vector, Parallelepiped parallelepiped)
 	{
-		if (Abs(parallelepiped.E - 1) < 0.0001)
+		if (MathF.Abs(parallelepiped.E - 1) < 0.0001)
 		{
 			if (Sqrt(Pow(parallelepiped.X - vector[0], 2) + Pow(parallelepiped.Y - vector[1], 2) +
 					 Pow(parallelepiped.Z - vector[2], 2)) >= parallelepiped.A / 2 * 1.73205080757) return false;
@@ -204,7 +209,7 @@ internal static class IntersectionService
 		return false;
 	}
 	
-	private static bool ElementaryIntersectCheckOnlyBorders(Parallelepiped par, ParallelepipedCoordinates cords)
+	public static bool ElementaryIntersectCheckOnlyBorders(Parallelepiped par, ParallelepipedCoordinates cords)
 	{
 		foreach (var edge in cords.ForAll())
 			if (IsVectorInBounds(edge, par))
@@ -250,7 +255,7 @@ internal static class IntersectionService
 		var oldDiagonal = oldPar.Radius;
 		var newDiagonal = Sqrt(Pow(newPar.A, 2) + Pow(newPar.A, 2) + Pow(newPar.A * newPar.E, 2));
 
-		var buffer = Min(oldDiagonal, newDiagonal/2) / 1.5f;
+		var buffer = Min(oldDiagonal, newDiagonal/2) / 1.9f;
 
 		return interCenterDistance > (oldDiagonal + newDiagonal / 2) + buffer;
 	}
@@ -290,7 +295,46 @@ internal static class IntersectionService
 			return true;
 		}
 		
-		return interCenterDistance < s1.Radius + s2.Radius;
+		return false;
+	}
+
+	public static bool IsVectorBelongsZone(Vector<float> vector, double outerBound, double step)
+	{
+		var distance = Sqrt(Pow(vector[0], 2) + Pow(vector[1], 2) + Pow(vector[2], 2));
+		
+		return distance < outerBound && distance > outerBound - step;
+	}
+	
+	public static bool IsParticleBelongsZone(Particle particle, double outerBound, double step)
+	{
+		var innerBound = outerBound - step;
+    
+		if (particle.ParticleKind == ParticleKind.Sphere)
+		{
+			var centerDistance = Sqrt(Pow(particle.X, 2) + Pow(particle.Y, 2) + Pow(particle.Z, 2));
+			var radius = ((Sphere)particle).Radius;
+			
+			return !((centerDistance + radius) < innerBound && (centerDistance - radius) > outerBound);
+		}
+
+		if (particle.ParticleKind == ParticleKind.Parallelepiped)
+		{
+			var edges = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates((Parallelepiped)particle);
+			var borders = ParallelepipedCoverer.FillBorders((Parallelepiped)particle, edges, 5);
+			foreach (var edge in borders.SelectMany(x => x))
+			{
+				var distance = Sqrt(Pow(edge[0], 2) + Pow(edge[1], 2) + Pow(edge[2], 2));
+
+				if (distance > innerBound && distance < outerBound)
+				{
+					return true;
+				}
+			}
+        
+			return false;
+		}
+    
+		return false;
 	}
 	
 	public static bool IsSphereInBoundCube(Sphere s1, Parallelepiped cubeZone)
@@ -313,27 +357,21 @@ internal static class IntersectionService
 		return insideX && insideY && insideZ;
 	}
 
-	public static bool IsParticleInsideZone(Particle particle, GenerationZone zone)
+	public static bool IsParticleInsideCubeZoneSphere(Sphere particle, GenerationZone zone)
 	{
-		switch (zone.GenerationZoneForm)
-		{
-			case GenerationZoneForm.Cube when particle.ParticleKind == ParticleKind.Parallelepiped:
-				return IsParallelepipedInBoundsOfCubeZone(zone.GlobalSize, particle as Parallelepiped);
-			
-			case GenerationZoneForm.Cube when particle.ParticleKind == ParticleKind.Sphere:
-				return IsSphereInBoundsOfCubeZone(zone.GlobalSize, particle as Sphere);
-			
-			case GenerationZoneForm.Sphere when particle.ParticleKind == ParticleKind.Parallelepiped:
-				return IsParallelepipedInBoundsOfSphereZone(zone.GlobalSize, particle as Parallelepiped);
-			
-			case GenerationZoneForm.Sphere when particle.ParticleKind == ParticleKind.Sphere:
-				return IsSphereInBoundsOfSphereZone(zone.GlobalSize, particle as Sphere);
-			
-			default:
-				throw new ArgumentException("not supported check");
-		}
+		return IsSphereInBoundsOfCubeZone(zone.GlobalSize, particle);
 	}
-
+	
+	public static bool IsParticleInsideSphereCubeZoneSphere(Sphere particle, GenerationZone zone)
+	{
+		return IsSphereInBoundsOfSphereZone(zone.GlobalSize, particle);
+	}
+	
+	public static bool IsParticleInsideZoneParallelepiped(Parallelepiped particle, GenerationZone zone)
+	{
+		return IsParallelepipedInBoundsOfCubeZone(zone.GlobalSize, particle);
+	}
+	
 	public static bool IsParallelepipedInBoundsOfCubeZone(double globalSize, Parallelepiped parallelepiped)
 	{
 		var par = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(parallelepiped);
@@ -434,5 +472,41 @@ internal static class IntersectionService
 		return vector[0] <= radius && vector[0] >= -radius &&
 		       vector[1] <= radius && vector[1] >= -radius &&
 		       vector[2] <= radius && vector[2] >= -radius;
+	}
+	
+	public static float Sqrt(float _d) 
+	{
+		float w = _d, h = 1f;
+
+		if (w < 1f)
+		{
+			h = _d;
+			w = 1f;
+		}
+
+		do
+		{
+			w *= 0.5f;
+			h += h;
+		} while (w > h);
+
+		float x = h + w;
+		float x2 = x * x;
+		float x4 = x2 * x * x;
+		float x6 = x4 * x * x;
+		float x8 = x6 * x * x;
+		float h2 = h * h;
+		float h3 = h2 * h;
+		float h4 = h3 * h;
+		float w2 = w * w;
+		float w3 = w2 * w;
+		float w4 = w3 * w;
+		float hw = h * w;
+		float h2w2 = h2 * w2;
+		float a = (256f * h4 * w4 + 1792 * h3 * w3 * x2 + 1120 * h2w2 * x4 + 112 * hw * x6 + x8);
+		float b = (16f * h2w2 + 24 * hw * x2 + x4);
+		float c = (4f * hw + x2);
+		float xcb = x * c * b;
+		return (8f * hw * xcb) / a + a / (32f * xcb);
 	}
 }

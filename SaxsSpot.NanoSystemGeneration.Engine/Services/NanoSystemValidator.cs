@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using MathNet.Numerics.LinearAlgebra;
 using Microsoft.Extensions.Logging;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
@@ -9,7 +10,7 @@ namespace SaxsSpot.NanoSystemGeneration.Engine.Services;
 
 public static class NanoSystemValidator
 {
-    public static bool ValidateSystemIntersectionsClassic(IList<Particle> particles)
+    public static bool ValidateSystemIntersectionsClassicSphere(IList<Sphere> particles)
     {
         foreach (var p1 in particles)
         {
@@ -17,7 +18,7 @@ public static class NanoSystemValidator
             {
                 if(p1 == p2) continue;
 
-                if (p1.IsIntersect(p2))
+                if (IntersectionService.IsSphereIntersect(p1 ,p2))
                 {
                     File.WriteAllLines("C:\\Projects\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\intersections", [p1.ToString(), p2.ToString()]);
                     return false;
@@ -29,30 +30,43 @@ public static class NanoSystemValidator
     }
 
     
-    public static (bool, int) ValidateSystemIntersections(IList<Particle> particles, GenerationZone zone)
+    public static (bool, int) ValidateSystemIntersections(IList<Particle> particles, GenerationZone zone, int pointCount, IProgress<float> progress = null)
     {
-        var randomVectors = GenerateRandomVectors(100000, zone);
-        var intersects = new List<(List<Particle>, Vector<float>)>();
-        foreach (var randomVector in randomVectors)
+        var randomVectors = RandomVectorGenerator.GenerateRandomVectors(pointCount, zone);
+        var intersects = new ConcurrentBag<(List<Particle>, Vector<float>)>();
+
+        var c = 0;
+        Parallel.ForEach(randomVectors, randomVector =>
         {
             var intersected = particles
                 .AsParallel()
                 .Where(x => IntersectionService.IsPointInsideParticle(randomVector, x))
                 .ToList();
+
             if (intersected.Count > 1)
             {
                 intersects.Add((intersected, randomVector));
             }
-        }
 
-        if (intersects.Any(intersected => intersected.Item1.Count > 1))
+            c++;
+            progress.Report(c / (float)pointCount);
+        });
+    
+        //TODO distinct
+        var distinctIntersects = 
+            intersects.DistinctBy(x => 
+                string.Join(',', x.Item1.OrderBy(x => x.GetVolume())
+                    .Select(x => x.ToString())))
+                .ToList();
+        
+        if (distinctIntersects.Any(intersected => intersected.Item1.Count > 1))
         {
-            foreach (var intersected in intersects)
+            foreach (var intersected in distinctIntersects)
             {
                 File.AppendAllLines("/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests/intersections", 
                     [string.Join("\n", intersected.Item1.Select(x => x.ToString())), intersected.Item2.ToString()]);
             }
-            return (false, intersects.Count);
+            return (false, distinctIntersects.Count);
         }
 
         return (true, 0);
@@ -60,7 +74,7 @@ public static class NanoSystemValidator
     
     public static List<(List<Particle>, Vector<float>)> GetSystemIntersections(IList<Particle> particles, GenerationZone zone)
     {
-        var randomVectors = GenerateRandomVectors(100000, zone);
+        var randomVectors = RandomVectorGenerator.GenerateRandomVectors(10000, zone);
         var intersects = new List<(List<Particle>, Vector<float>)>();
         foreach (var randomVector in randomVectors)
         {
@@ -75,61 +89,5 @@ public static class NanoSystemValidator
         }
 
         return intersects;
-    }
-
-    public static bool ValidateGenerationZone(GenerationZone zone, IList<Particle> particles)
-    {
-        var extremeParticles = new[] 
-            {particles.MaxBy(x => x.X), particles.MaxBy(x => x.Y), particles.MaxBy(x => x.Z)};
-
-        foreach (var extremeParticle in extremeParticles)
-        {
-            if (!IntersectionService.IsParticleInsideZone(extremeParticle, zone))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    
-    private static List<Vector<float>> GenerateRandomVectors(int count, GenerationZone zone)
-    {
-        var random = new Random();
-        var list = new List<Vector<float>>();
-
-        for (int i = 0; i < count; i++)
-        {
-            Vector<float> vector;
-
-            if (zone.GenerationZoneForm == GenerationZoneForm.Cube)
-            {
-                vector = Vector<float>.Build.DenseOfArray(new float[]
-                {
-                    (random.NextSingle() * 2 - 1) * (float)zone.GlobalSize,
-                    (random.NextSingle() * 2 - 1) * (float)zone.GlobalSize,
-                    (random.NextSingle() * 2 - 1) * (float)zone.GlobalSize
-                });
-            }
-            else
-            {
-                Vector<float> point;
-                do
-                {
-                    point = Vector<float>.Build.DenseOfArray(new float[]
-                    {
-                        (random.NextSingle() * 2 - 1),
-                        (random.NextSingle() * 2 - 1),
-                        (random.NextSingle() * 2 - 1)
-                    });
-                } while (point.L2Norm() > 1);
-
-                vector = point * (float)zone.GlobalSize;
-            }
-
-            list.Add(vector);
-        }
-
-        return list;
     }
 }
