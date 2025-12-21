@@ -311,7 +311,7 @@ public class ParticleGenerationTests
             .ReadLines(
                 $"{basePath}/analyze_system_par")
             .Select(x => Parallelepiped.FromString(x));
-        var analyze = NanosystemAnalyzer.GetNanosystemAnalyze(particles.ToList(), new GenerationZone(particles.MaxBy(x => x.Y).Y, GenerationZoneForm.Sphere), 20, 100000);
+        var analyze = NanosystemAnalyzer.GetNanosystemAnalyze(particles.ToList(), new GenerationZone(particles.MaxBy(x => x.Y).Y, GenerationZoneForm.Sphere), 20, 500000);
         TestContext.Progress.WriteLine("Analyzing system...");
         
         await File.AppendAllLinesAsync($"{basePath}/analyze", analyze.Select(x => $"{x.ZoneIndex}: {x.Concentration}"));
