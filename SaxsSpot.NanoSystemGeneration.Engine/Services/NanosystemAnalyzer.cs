@@ -10,7 +10,8 @@ namespace SaxsSpot.NanoSystemGeneration.Engine.Services;
 
 public static class NanosystemAnalyzer
 {
-	public static ICollection<ZoneConcentrationAnalyze> GetNanosystemAnalyze<T>
+	public static ICollection<ZoneConcentrationAnalyze> 
+		GetNanosystemAnalyze<T>
 		(ICollection<T> particles, GenerationZone generationZone, int zoneCount, int vectorCount) where T : Particle
 	{
 		// V = 4/3*pi*r^3
@@ -43,12 +44,7 @@ public static class NanosystemAnalyzer
 				    IntersectionService.IsParticleBelongsZone(particle, radius, radius - (index == 0 ? 0 : radii[index - 1])))
 			    .ToList()
 	    }).ToList();
-
-	    var su18 = pointsByRadii[18].Particles.Sum(x => x.GetVolume());
-	    var sum12 = pointsByRadii[12].Particles.Sum(x => x.GetVolume());
-	    var sum15 = pointsByRadii[15].Particles.Sum(x => x.GetVolume());
-	    var sum0 = pointsByRadii[0].Particles.Sum(x => x.GetVolume());
-
+	    
     	var result = new ConcurrentBag<ZoneConcentrationAnalyze>();
     	var zoneIndex = 0;
 	    Parallel.ForEach(pointsByRadii.OrderBy(p => p.Radius), new ParallelOptions()
