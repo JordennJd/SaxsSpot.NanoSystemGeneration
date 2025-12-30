@@ -28,6 +28,25 @@ public static class NanoSystemValidator
         
         return true;
     }
+    
+    public static bool ValidateSystemIntersectionsClassicParallelepiped(IList<Parallelepiped> particles)
+    {
+        foreach (var p1 in particles)
+        {
+            foreach (var p2 in particles)
+            {
+                if(p1 == p2) continue;
+
+                if (IntersectionService.IsIntersect(p1 ,p2))
+                {
+                    File.WriteAllLines("C:\\Projects\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\intersections", [p1.ToString(), p2.ToString()]);
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
 
     
     public static (bool, int) ValidateSystemIntersections(IList<Particle> particles, GenerationZone zone, int pointCount, IProgress<float> progress = null)

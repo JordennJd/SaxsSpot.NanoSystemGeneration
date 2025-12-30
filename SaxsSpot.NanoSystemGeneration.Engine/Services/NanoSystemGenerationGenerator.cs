@@ -150,7 +150,7 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 					_isDistributed = true;
 					return tree
 						.GetParticles()
-						.Where(particle => IntersectionService.IsParallelepipedInBoundsOfSphereZone(_excessedGenerationZone.GlobalSize, particle))
+						.Where(particle => true || IntersectionService.IsParallelepipedInBoundsOfSphereZone(_excessedGenerationZone.GlobalSize, particle))
 						.Select(Particle (x) => x)
 						.ToList();
 				}
@@ -158,91 +158,6 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 				_isDistributed = true;
 				return tree
 					.GetParticles()
-					.Select(Particle (x) => x)
-					.ToList();
-			}
-			catch (OperationCanceledException)
-			{
-				throw;
-			}
-			catch (Exception ex)
-			{
-				throw;
-			}
-			finally
-			{
-				//await cellManager.ClearAsync();
-			}
-		}
-		throw new NotImplementedException();
-	}
-	
-	public async Task<IList<Particle>> DistributeParticlesNoOptimization(IProgress<float> progress, CancellationToken cancellationToken)
-	{
-		ArgumentNullException.ThrowIfNull(generationParameters);
-		ArgumentNullException.ThrowIfNull(_particles);
-		_generationZone ??= await GetGenerationZone();
-
-		if (generationParameters.GetParticleKind() == ParticleKind.Sphere)
-		{ 
-			var spheres = _particles
-			.OrderBy(p => p.GetVolume())
-			.Reverse()
-			.Select(x => x as Sphere)
-			.ToList();
-			
-			var result = new List<Sphere>();
-			
-			var info = new GenerationInfo();
-			var globalSizeFloat = (float)_generationZone.GlobalSize;
-			try
-			{
-				var handledParticles = 0;
-				var attempCount = 100000;
-				foreach (var particle in spheres)
-				{
-					progress?.Report(100f * handledParticles / spheres.Count);
-					cancellationToken.ThrowIfCancellationRequested();
-
-					for (var i = 0; i < attempCount; i++)
-					{
-						ParticleManipulator.ChangePosition(particle, globalSizeFloat);
-	 
-						if (!IntersectionService.IsParticleInsideCubeZoneSphere(particle, _generationZone))
-						{
-							continue;
-						}
-
-						var isIntersect = false;
-						foreach (var sphere in result)
-						{
-							if (IntersectionService.IsSphereIntersect(sphere, particle))
-							{
-								isIntersect = true;
-								break;
-							}
-						}
-
-						if (!isIntersect)
-						{
-							handledParticles++;
-							result.Add(particle);
-							break;
-						}
-					}
-				}
-				
-
-
-				if (_excessedGenerationZone is not null)
-				{
-					return result
-						.Where(particle => IntersectionService.IsParticleInsideSphereCubeZoneSphere(particle, _excessedGenerationZone))
-						.Select(Particle (x) => x)
-						.ToList();
-				}
-
-				return result
 					.Select(Particle (x) => x)
 					.ToList();
 			}

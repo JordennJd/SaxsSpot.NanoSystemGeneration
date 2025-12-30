@@ -111,39 +111,11 @@ internal static class IntersectionService
 		return list;
 	}
 
-	public static int GetCountOfParallelepipedsByPoint(Vector<float> vector, IEnumerable<Parallelepiped> parallelepipeds)
-	{
-		var c = 0;
-		foreach (var par in parallelepipeds)
-		{
-			try
-			{
-				if (IsPointInParallelepipedCheckForCube(vector, par)) c++;
-				else continue;
-			}
-			catch
-			{
-			}
-
-			if (Sqrt(Pow(par.X - vector[0], 2) + Pow(par.Y - vector[1], 2) + Pow(par.Z - vector[2], 2)) >
-				Sqrt(Pow(par.A, 2) + Pow(par.A, 2) + Pow(par.A * par.E, 2))) continue;
-			var vec = Vector<float>.Build.DenseOfArray([vector[0], vector[1], vector[2]]);
-			vec = ParallelepipedManipulator.DoBackVectorRotate(
-				ParallelepipedManipulator.DoVectorTransform(vec, -par.X, -par.Y, -par.Z), par.Phi, par.Theta,
-				par.Zenit);
-
-			if (IsVectorInBounds(vec, par)) c++;
-			;
-		}
-
-		return c;
-	}
-
 	public static bool IsPointInParallelepiped(Vector<float> vector, Particle parallelepiped)
 	{
 		var par = parallelepiped as Parallelepiped;
 		if (Sqrt(Pow(par.X - vector[0], 2) + Pow(par.Y - vector[1], 2) +
-				 Pow(par.Z - vector[2], 2)) > Sqrt(Pow(par.A, 2) + Pow(par.A, 2) + Pow(par.A * par.E, 2)))
+				 Pow(par.Z - vector[2], 2)) > Sqrt(Pow(par.A/2, 2) + Pow(par.A/2, 2) + Pow(par.A/2 * par.E, 2)))
 			return false;
 		
 		var vec = Vector<float>.Build.DenseOfArray([vector[0], vector[1], vector[2]]);
@@ -323,8 +295,15 @@ internal static class IntersectionService
 			var borders = ParallelepipedCoverer.FillBorders((Parallelepiped)particle, edges, 5);
 			foreach (var edge in borders.SelectMany(x => x))
 			{
-				var distance = Sqrt(Pow(edge[0], 2) + Pow(edge[1], 2) + Pow(edge[2], 2));
+				var centerDistance = Sqrt(Pow(particle.X, 2) + Pow(particle.Y, 2) + Pow(particle.Z, 2));
 
+				if (outerBound > centerDistance && innerBound < centerDistance)
+				{
+					return true;
+				}
+
+				var distance = Sqrt(Pow(edge[0], 2) + Pow(edge[1], 2) + Pow(edge[2], 2));
+			
 				if (distance > innerBound && distance < outerBound)
 				{
 					return true;

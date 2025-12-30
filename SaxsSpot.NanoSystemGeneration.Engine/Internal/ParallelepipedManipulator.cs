@@ -145,9 +145,6 @@ internal static class ParallelepipedManipulator
 		}).Transpose();
 		
 		var res = zRotate * yRotate * xRotate * vec;
-		xRotate.Clear();
-		yRotate.Clear();
-		zRotate.Clear();
 		return res;
 	}
 	
