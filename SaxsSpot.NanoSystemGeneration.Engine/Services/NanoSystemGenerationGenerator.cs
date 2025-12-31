@@ -157,7 +157,7 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 					_isDistributed = true;
 					return tree
 						.GetParticles()
-						.Where(particle => true || IntersectionService.IsParallelepipedInBoundsOfSphereZone(_excessedGenerationZone.GlobalSize, particle))
+						.Where(particle => IntersectionService.IsParallelepipedInBoundsOfSphereZone(_excessedGenerationZone.GlobalSize, particle))
 						.Select(Particle (x) => x)
 						.ToList();
 				}
