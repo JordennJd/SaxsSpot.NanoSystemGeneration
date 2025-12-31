@@ -30,12 +30,15 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 
 	public async Task<IList<Particle>> DistributeParticles(IProgress<float> progress, CancellationToken cancellationToken)
 	{
+		cancellationToken.ThrowIfCancellationRequested();
+		
 		if (_isDistributed)
 		{
 			throw new InvalidOperationException("particles already distributed");
 		}
 		ArgumentNullException.ThrowIfNull(generationParameters);
 		ArgumentNullException.ThrowIfNull(_particles);
+		
 		_generationZone ??= await GetGenerationZone();
 		
 		if (generationParameters.GetParticleKind() == ParticleKind.Sphere)
@@ -56,9 +59,11 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 				var attemptCount = 100000;
 				foreach (var particle in spheres)
 				{
+					cancellationToken.ThrowIfCancellationRequested();
+					
 					progress?.Report(100f * handledParticles / spheres.Count);
 					for (var i = 0; i < attemptCount; i++)
-					{
+					{						
 						ParticleManipulator.ChangePosition(particle, globalSizeFloat);
 	 
 						if (!IntersectionService.IsParticleInsideCubeZoneSphere(particle, _generationZone))
@@ -124,6 +129,8 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 				var attemptCount = 100000;
 				foreach (var particle in spheres)
 				{
+					cancellationToken.ThrowIfCancellationRequested();
+					
 					progress?.Report(100f * handledParticles / spheres.Count);
 					for (var i = 0; i < attemptCount; i++)
 					{
