@@ -20,7 +20,7 @@ public static class NanoSystemValidator
 
                 if (IntersectionService.IsSphereIntersect(p1 ,p2))
                 {
-                    File.WriteAllLines("C:\\Projects\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\intersections", [p1.ToString(), p2.ToString()]);
+                    File.WriteAllLines("C:\\Projects\\SaxsSpot\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\intersections", [p1.ToString(), p2.ToString()]);
                     return false;
                 }
             }

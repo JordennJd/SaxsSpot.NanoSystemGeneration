@@ -26,9 +26,9 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
     public bool IsParticleInside { get; set; } = false;
 
 
-    public List<MathNet.Numerics.LinearAlgebra.Vector<float>> Edges { get; set; }
+    public List<MathNet.Numerics.LinearAlgebra.Vector<float>>? Edges { get; set; }
     public bool IsEdgesRotated = false;
-    public MathNet.Numerics.LinearAlgebra.Vector<float>[][] Borders { get; set; } 
+    public MathNet.Numerics.LinearAlgebra.Vector<float>[][]? Borders { get; set; } 
     public override ParticleKind ParticleKind { get; init; } = ParticleKind.Parallelepiped;
     
     public override double GetVolume()
@@ -45,7 +45,6 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
     {
         return MathF.Sqrt(A * A + A * E + A * A);
     }
-
 
     public override void ChangePosition(float x, float y, float z, float fi = 0, float theta = 0, float zenit = 0)
     {

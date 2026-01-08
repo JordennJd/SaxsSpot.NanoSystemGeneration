@@ -122,7 +122,7 @@ internal static class IntersectionService
 		vec = ParallelepipedManipulator
 			.DoBackVectorRotate(ParallelepipedManipulator
 					.DoVectorTransform(vec, -par.X, -par.Y, -par.Z), par.Phi,
-		par.Theta, par.Zenit);
+		par.Theta, par.Zenit, par.BackRotateMatrix);
 
 		return IsVectorInBounds(vec, par);
 	}

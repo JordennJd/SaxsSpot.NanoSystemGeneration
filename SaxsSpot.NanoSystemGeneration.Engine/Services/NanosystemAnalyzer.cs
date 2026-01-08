@@ -26,9 +26,6 @@ public static class NanosystemAnalyzer
 			currentRadius = Math.Pow((volumeStep + (4f/3f*Math.PI*Math.Pow(currentRadius, 3))) / (4f/3f * Math.PI), 1f / 3f);
 			radii.Add(currentRadius);
 		}
-
-		var forTest = particles.Where(x => radii[^2] >= Math.Pow(x.X * x.X + x.Y * x.Y + x.Z * x.Z, 0.5d) 
-		                                   && Math.Pow(x.X * x.X + x.Y * x.Y + x.Z * x.Z, 0.5d) <= radii[^1]);
 		
 		var bounds = radii.Select((radius, index) => new
 	    {
@@ -36,10 +33,16 @@ public static class NanosystemAnalyzer
 		    InnerRadius = index == 0 ? 0 : radii[index - 1],
 		    OuterRadius = radius,
 	    }).ToList();
-	    
+
+		particles
+			.AsParallel()
+			.OfType<Parallelepiped>()
+			.ForAll(ParallelepipedManipulator.PrepareParallelepiped);
+
     	var result = new ConcurrentBag<ZoneConcentrationAnalyze>();
 	    Parallel.ForEach(bounds.OrderBy(p => p.ZoneIndex), new ParallelOptions()
 	    {
+		    MaxDegreeOfParallelism = Environment.ProcessorCount
 	    }, bound =>
 	    {
 		    var points = RandomVectorGenerator.GenerateRandomVectors(
@@ -51,7 +54,7 @@ public static class NanosystemAnalyzer
 		    
 		    var pointsInParticle = 0f;
 
-		    foreach (var paricle in particles)
+		    foreach (var paricle in particles.Where(x => IntersectionService.IsParticleBelongsZone(x, bound.OuterRadius, bound.OuterRadius - bound.InnerRadius)))
 		    {
 			    foreach (var point in points)
 			    {
