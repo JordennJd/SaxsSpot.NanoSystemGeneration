@@ -2,6 +2,7 @@ using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationInfo;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
 using static Extreme.Mathematics.Elementary;
@@ -16,9 +17,10 @@ internal static class IntersectionService
 	/// <param name="newPar">The new parallelepiped.</param>
 	/// <param name="density">The density of the points to check.</param>
 	/// <returns>True if the two parallelepipeds intersect, false otherwise.</returns>
-	public static bool IsIntersect(Parallelepiped oldPar, Parallelepiped newPar, int density = 10, bool isNeighbors = false, GenerationInfo? info = null)
+	public static bool IsIntersect(Parallelepiped oldPar, Parallelepiped newPar, int density = 10, bool isNeighbors = false, GenerationInfo? info = null, ParticleGenerationInfo? particleInfo = null)
 	{
 		info?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesTotal();
+		particleInfo?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesTotal();
 		if (IsInterCenterDistanceMoreThenDiagonalCheck(oldPar, newPar))
 		{
 			newPar.BackRotateMatrix = null;
@@ -27,10 +29,12 @@ internal static class IntersectionService
 			newPar.Borders = null;
 			newPar.IsParticleInside = false;
 			info?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesPositive();
+			particleInfo?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesPositive();
 			return false;
 		}
 		
 		info?.IncrementIsInterCenterDistanceLessThenSidesCheckTimesTotal();
+		particleInfo?.IncrementIsInterCenterDistanceLessThenSidesCheckTimesTotal();
 		if (IsInterCenterDistanceLessThenSidesCheck(oldPar, newPar))
 		{
 			newPar.BackRotateMatrix = null;
@@ -39,16 +43,19 @@ internal static class IntersectionService
 			newPar.Borders = null;
 			newPar.IsParticleInside = false;
 			info?.IncrementIsInterCenterDistanceLessThenSidesCheckTimesPositive();
+			particleInfo?.IncrementIsInterCenterDistanceLessThenSidesCheckTimesPositive();
 			return true;
 		}
 		
 		info?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesTotal();
+		particleInfo?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesTotal();
 		var newCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(newPar).Copy();
 		ParallelepipedManipulator.DoParallelepipedTransform(ref newCord, -oldPar.X, -oldPar.Y, -oldPar.Z);
-		ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, oldPar);
+		ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, oldPar, info, particleInfo);
 		if (ElementaryIntersectCheckOnlyBorders(oldPar, newCord))
 		{
 			info?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesPositive();
+			particleInfo?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesPositive();
 			newPar.BackRotateMatrix = null;
 			newPar.IsEdgesRotated = false;
 			newPar.Edges = null;
@@ -58,12 +65,14 @@ internal static class IntersectionService
 		}
 		
 		info?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesTotal();
+		particleInfo?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesTotal();
 		var oldCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(oldPar).Copy();
 		ParallelepipedManipulator.DoParallelepipedTransform(ref oldCord, -newPar.X, -newPar.Y, -newPar.Z);
-		ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, newPar);
+		ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, newPar, info, particleInfo);
 		if (ElementaryIntersectCheckOnlyBorders(newPar, oldCord))
 		{
 			info?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesPositive();
+			particleInfo?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesPositive();
 			newPar.BackRotateMatrix = null;
 			newPar.IsEdgesRotated = false;
 			newPar.Edges = null;
@@ -72,7 +81,7 @@ internal static class IntersectionService
 			return true;
 		}
 
-		if (SAT.IsIntersect(oldPar, newPar))
+		if (SAT.IsIntersect(oldPar, newPar, info, particleInfo))
 		{
 			return true;
 		}
@@ -255,15 +264,17 @@ internal static class IntersectionService
 	/// <param name="s1"></param>
 	/// <param name="s2"></param>
 	/// <returns>True if the inter-center distance is greater than the diagonal check, false otherwise.</returns>
-	public static bool IsSphereIntersect(Sphere s1, Sphere s2, GenerationInfo? info = null)
+	public static bool IsSphereIntersect(Sphere s1, Sphere s2, GenerationInfo? info = null, ParticleGenerationInfo? particleInfo = null)
 	{
 		var interCenterDistance =
 			Sqrt(Pow(s1.X - s2.X, 2) + Pow(s1.Y - s2.Y, 2) + Pow(s1.Z - s2.Z, 2));
 
 		info?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesTotal();
+		particleInfo?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesTotal();
 		if (interCenterDistance < s1.Radius + s2.Radius)
 		{
 			info?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesPositive();
+			particleInfo?.IncrementIsInterCenterDistanceMoreThenDiagonalCheckTimesPositive();
 			return true;
 		}
 		

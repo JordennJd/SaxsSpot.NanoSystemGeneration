@@ -1,5 +1,6 @@
 using MathNet.Numerics.LinearAlgebra;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationInfo;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
@@ -94,7 +95,7 @@ internal static class ParallelepipedManipulator
 	/// <param name="Fi">The rotation angle in the xy-plane.</param>
 	/// <param name="Theta">The rotation angle in the xz-plane.</param>
 	/// <param name="Zenit">The rotation angle in the yz-plane.</param>
-	public static void DoBackParallelepipedRotate(ref ParallelepipedCoordinates parallelepipedCoordinates, Parallelepiped par)
+	public static void DoBackParallelepipedRotate(ref ParallelepipedCoordinates parallelepipedCoordinates, Parallelepiped par, GenerationInfo? info = null, ParticleGenerationInfo? particleInfo = null)
 	{
 		if (par.BackRotateMatrix is null)
 		{
@@ -121,6 +122,12 @@ internal static class ParallelepipedManipulator
 
 			var backRotateMatrix = zRotate * yRotate * xRotate;
 			par.BackRotateMatrix = backRotateMatrix;
+		}
+		else
+		{
+			// Matrix was reused
+			info?.IncrementBackRotateMatrixReused();
+			particleInfo?.IncrementBackRotateMatrixReused();
 		}
 
 		foreach (var edge in parallelepipedCoordinates.ForAll())

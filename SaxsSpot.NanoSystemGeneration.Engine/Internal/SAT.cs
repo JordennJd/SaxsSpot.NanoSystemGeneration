@@ -1,11 +1,12 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationInfo;
 
 internal static class SAT
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsIntersect(in Parallelepiped cube1, in Parallelepiped cube2)
+    public static bool IsIntersect(in Parallelepiped cube1, in Parallelepiped cube2, GenerationInfo? info = null, ParticleGenerationInfo? particleInfo = null)
     {
         // Получаем матрицы вращения один раз
         Matrix4x4 rotation1 = Matrix4x4.CreateFromYawPitchRoll(cube1.Theta, cube1.Phi, cube1.Zenit);
@@ -47,9 +48,15 @@ internal static class SAT
             !OverlapOnCrossAxis(in cube1, in cube2, axis1_z, axis2_y, rotation1, rotation2) ||
             !OverlapOnCrossAxis(in cube1, in cube2, axis1_z, axis2_z, rotation1, rotation2))
         {
+            info?.IncrementSATCheckTimesTotal();
+            particleInfo?.IncrementSATCheckTimesTotal();
             return false;
         }
 
+        info?.IncrementSATCheckTimesTotal();
+        info?.IncrementSATCheckTimesPositive();
+        particleInfo?.IncrementSATCheckTimesTotal();
+        particleInfo?.IncrementSATCheckTimesPositive();
         return true;
     }
 
