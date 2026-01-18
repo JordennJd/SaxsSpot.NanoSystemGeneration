@@ -1,4 +1,5 @@
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationInfo;
 using SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Models.TernaryTree;
@@ -76,22 +77,37 @@ public class TernaryTreeNodeSphere
         }
     }
 
-    public bool TryInsertParticle(Sphere particle, GenerationInfo? info = null)
+    public bool TryInsertParticle(Sphere particle, GenerationInfo? info = null, ParticleGenerationInfo? particleInfo = null)
     {
         TernaryTreeNodeSphere deepestNodeSphereForParticle = FindDeepestNodeForParticle(this, particle);
         var nearParticles = deepestNodeSphereForParticle.GetParticles();
 
-        if (nearParticles.Any(particleToCheck => IntersectionService.IsSphereIntersect(particleToCheck, particle, info)))
+        // Count particles checked in the first node
+        foreach (var particleToCheck in nearParticles)
         {
-            info?.IncrementFirstNodeIntersectionFindTimes();
-            return false;
+            particleInfo?.IncrementParticlesCheckedForIntersection();
+            if (IntersectionService.IsSphereIntersect(particleToCheck, particle, info, particleInfo))
+            {
+                info?.IncrementFirstNodeIntersectionFindTimes();
+                particleInfo?.IncrementFirstNodeIntersectionFindTimes();
+                return false;
+            }
         }
-        if (deepestNodeSphereForParticle._neighbors
-                .Where(node => node?.IsParticleInside(particle) is true)
-                .SelectMany(x => x.GetParticles()).Any(particleToCheck => IntersectionService.IsSphereIntersect(particleToCheck, particle, info)))
+        
+        // Count particles checked in neighbor nodes
+        var neighborParticles = deepestNodeSphereForParticle._neighbors
+            .Where(node => node?.IsParticleInside(particle) is true)
+            .SelectMany(x => x.GetParticles())
+            .ToList();
+        foreach (var particleToCheck in neighborParticles)
         {
-            info?.IncrementTotalNeighborsNodesCheckedCount();
-            return false;
+            particleInfo?.IncrementParticlesCheckedForIntersection();
+            if (IntersectionService.IsSphereIntersect(particleToCheck, particle, info, particleInfo))
+            {
+                info?.IncrementTotalNeighborsNodesCheckedCount();
+                particleInfo?.IncrementTotalNeighborsNodesCheckedCount();
+                return false;
+            }
         }
         
         deepestNodeSphereForParticle._particles.Add(particle);

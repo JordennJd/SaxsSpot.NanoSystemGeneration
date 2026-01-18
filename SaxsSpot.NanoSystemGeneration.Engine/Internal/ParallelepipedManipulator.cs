@@ -1,5 +1,6 @@
 using MathNet.Numerics.LinearAlgebra;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationInfo;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
@@ -11,6 +12,19 @@ internal static class ParallelepipedManipulator
 	/// <param name="par">The Parallelepiped object to convert.</param>
 	/// <returns>The ParallelepipedCoordinates object.</returns>
 	public static ParallelepipedCoordinates ParallelepipedToParallelepipedCoordinates(Parallelepiped par)
+	{
+		if (par.Edges is null)
+		{
+			PrepareParallelepiped(par);
+		}
+
+		var cords = new ParallelepipedCoordinates(par.Edges[0], par.Edges[1], par.Edges[2], par.Edges[3], par.Edges[4],
+			par.Edges[5], par.Edges[6], par.Edges[7]);
+
+		return cords;
+	}
+
+	public static void PrepareParallelepiped(Parallelepiped par)
 	{
 		if (par.Edges is null)
 		{
@@ -29,11 +43,6 @@ internal static class ParallelepipedManipulator
 			par.BackRotateMatrix = matrix;
 			DoParallelepipedTransform(par.Edges, par.X, par.Y, par.Z);
 		}
-
-		var cords = new ParallelepipedCoordinates(par.Edges[0], par.Edges[1], par.Edges[2], par.Edges[3], par.Edges[4],
-			par.Edges[5], par.Edges[6], par.Edges[7]);
-
-		return cords;
 	}
 
 	/// <summary>
@@ -86,7 +95,7 @@ internal static class ParallelepipedManipulator
 	/// <param name="Fi">The rotation angle in the xy-plane.</param>
 	/// <param name="Theta">The rotation angle in the xz-plane.</param>
 	/// <param name="Zenit">The rotation angle in the yz-plane.</param>
-	public static void DoBackParallelepipedRotate(ref ParallelepipedCoordinates parallelepipedCoordinates, Parallelepiped par)
+	public static void DoBackParallelepipedRotate(ref ParallelepipedCoordinates parallelepipedCoordinates, Parallelepiped par, GenerationInfo? info = null, ParticleGenerationInfo? particleInfo = null)
 	{
 		if (par.BackRotateMatrix is null)
 		{
@@ -114,6 +123,12 @@ internal static class ParallelepipedManipulator
 			var backRotateMatrix = zRotate * yRotate * xRotate;
 			par.BackRotateMatrix = backRotateMatrix;
 		}
+		else
+		{
+			// Matrix was reused
+			info?.IncrementBackRotateMatrixReused();
+			particleInfo?.IncrementBackRotateMatrixReused();
+		}
 
 		foreach (var edge in parallelepipedCoordinates.ForAll())
 		{
@@ -121,8 +136,12 @@ internal static class ParallelepipedManipulator
 		}
 	}
 
-	public static Vector<float> DoBackVectorRotate(Vector<float> vec, float Fi, float Theta, float Zenit)
+	public static Vector<float> DoBackVectorRotate(Vector<float> vec, float Fi, float Theta, float Zenit, Matrix<float>? matrix = null)
 	{
+		if (matrix is not null)
+		{
+			return matrix * vec;
+		}
 		var xRotate = Matrix<float>.Build.DenseOfArray(new[,]
 			{
 				{ 1, 0, 0 },

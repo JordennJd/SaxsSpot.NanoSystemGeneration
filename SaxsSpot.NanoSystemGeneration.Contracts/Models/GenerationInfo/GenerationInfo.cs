@@ -1,3 +1,5 @@
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationInfo;
+
 public class GenerationInfo
 {
     /// <summary>
@@ -79,6 +81,21 @@ public class GenerationInfo
     /// Total count when back rotate matrix was reused
     /// </summary>
     internal int BackRotateMatrixReused;
+    
+    /// <summary>
+    /// Count of SAT intersection checks that found intersection
+    /// </summary>
+    internal int SATCheckTimesPositive;
+    
+    /// <summary>
+    /// Total count of SAT intersection checks performed
+    /// </summary>
+    internal int SATCheckTimesTotal;
+    
+    /// <summary>
+    /// List of generation information for each particle
+    /// </summary>
+    internal List<ParticleGenerationInfo> ParticleInfos = new();
 
     // Setters for all fields
     public void IncrementBackRotateMatrixReused() => BackRotateMatrixReused++;
@@ -95,6 +112,8 @@ public class GenerationInfo
     public void IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesTotal() => ElementaryIntersectCheckOnlyBordersNewTransformationTimesTotal++;
     public void IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesPositive() => ElementaryIntersectCheckOnlyBordersOldTransformationTimesPositive++;
     public void IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesTotal() => ElementaryIntersectCheckOnlyBordersOldTransformationTimesTotal++;
+    public void IncrementSATCheckTimesPositive() => SATCheckTimesPositive++;
+    public void IncrementSATCheckTimesTotal() => SATCheckTimesTotal++;
 
     public void SetTreeBuildTime(TimeSpan value) => TreeBuildTime = value;
     public void SetGenerationTime(TimeSpan value) => GenerationTime = value;
@@ -180,6 +199,16 @@ public class GenerationInfo
     /// Gets total count of elementary intersection checks with old particle transformation
     /// </summary>
     public int GetElementaryIntersectCheckOnlyBordersOldTransformationTimesTotal() => ElementaryIntersectCheckOnlyBordersOldTransformationTimesTotal;
+    
+    /// <summary>
+    /// Gets count of positive SAT intersection checks
+    /// </summary>
+    public int GetSATCheckTimesPositive() => SATCheckTimesPositive;
+    
+    /// <summary>
+    /// Gets total count of SAT intersection checks performed
+    /// </summary>
+    public int GetSATCheckTimesTotal() => SATCheckTimesTotal;
 
     // Calculated properties
 
@@ -228,6 +257,12 @@ public class GenerationInfo
     /// <returns></returns>
     public double GetBackRotateMatrixReusedEfficiency() => ElementaryIntersectCheckOnlyBordersNewTransformationTimesTotal > 0 
         ? (double)BackRotateMatrixReused / ElementaryIntersectCheckOnlyBordersNewTransformationTimesTotal : 0;
+    
+    /// <summary>
+    /// Calculates the efficiency of SAT intersection checks (ratio of positive to total checks)
+    /// </summary>
+    public double GetSATCheckEfficiency() => SATCheckTimesTotal > 0 
+        ? (double)SATCheckTimesPositive / SATCheckTimesTotal : 0;
 
     
     /// <summary>
@@ -242,5 +277,20 @@ public class GenerationInfo
     {
         var totalTime = GetTotalTime();
         return totalTime.TotalMilliseconds > 0 ? TreeBuildTime.TotalMilliseconds / totalTime.TotalMilliseconds : 0;
+    }
+    
+    /// <summary>
+    /// Gets the list of particle generation information
+    /// </summary>
+    public IReadOnlyList<ParticleGenerationInfo> GetParticleInfos() => ParticleInfos.AsReadOnly();
+    
+    /// <summary>
+    /// Creates a new ParticleGenerationInfo and adds it to the list
+    /// </summary>
+    public ParticleGenerationInfo CreateParticleInfo(int particleIndex)
+    {
+        var particleInfo = new ParticleGenerationInfo { ParticleIndex = particleIndex };
+        ParticleInfos.Add(particleInfo);
+        return particleInfo;
     }
 }

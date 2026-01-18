@@ -1,4 +1,5 @@
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationInfo;
 using SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Models.TernaryTree;
@@ -156,7 +157,7 @@ public class TernaryTreeNodeParallelepiped
             info?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesTotal();
             var newCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(particle).Copy();
             ParallelepipedManipulator.DoParallelepipedTransform(ref newCord, -nearParticle.X, -nearParticle.Y, -nearParticle.Z);
-            ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, nearParticle);
+            ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, nearParticle, info, null);
             if (IntersectionService.ElementaryIntersectCheckOnlyBorders(nearParticle, newCord))
             {
                 info?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesPositive();
@@ -171,7 +172,7 @@ public class TernaryTreeNodeParallelepiped
             info?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesTotal();
             var oldCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(nearParticle).Copy();
             ParallelepipedManipulator.DoParallelepipedTransform(ref oldCord, -particle.X, -particle.Y, -particle.Z);
-            ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, particle);
+            ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, particle, info, null);
             if (IntersectionService.ElementaryIntersectCheckOnlyBorders(particle, oldCord))
             {
                 info?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesPositive();
@@ -188,7 +189,7 @@ public class TernaryTreeNodeParallelepiped
             info?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesTotal();
             var newCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(particle).Copy();
             ParallelepipedManipulator.DoParallelepipedTransform(ref newCord, -nearParticle.X, -nearParticle.Y, -nearParticle.Z);
-            ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, nearParticle);
+            ParallelepipedManipulator.DoBackParallelepipedRotate(ref newCord, nearParticle, info, null);
             if (IntersectionService.ElementaryIntersectCheckOnlyBorders(nearParticle, newCord))
             {
                 info?.IncrementElementaryIntersectCheckOnlyBordersNewTransformationTimesPositive();
@@ -203,7 +204,7 @@ public class TernaryTreeNodeParallelepiped
             info?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesTotal();
             var oldCord = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(nearParticle).Copy();
             ParallelepipedManipulator.DoParallelepipedTransform(ref oldCord, -particle.X, -particle.Y, -particle.Z);
-            ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, particle);
+            ParallelepipedManipulator.DoBackParallelepipedRotate(ref oldCord, particle, info, null);
             if (IntersectionService.ElementaryIntersectCheckOnlyBorders(particle, oldCord))
             {
                 info?.IncrementElementaryIntersectCheckOnlyBordersOldTransformationTimesPositive();
@@ -217,14 +218,14 @@ public class TernaryTreeNodeParallelepiped
         }
         foreach (var nearParticle in nearParticles)
         {
-            if (SAT.IsIntersect(nearParticle, particle))
+            if (SAT.IsIntersect(nearParticle, particle, info, null))
             {
                 return false;
             }
         }
         foreach (var nearParticle in toCheck)
         {
-            if (SAT.IsIntersect(nearParticle, particle))
+            if (SAT.IsIntersect(nearParticle, particle, info, null))
             {
                 return false;
             }
@@ -234,21 +235,35 @@ public class TernaryTreeNodeParallelepiped
         return true;
     }
     
-    public bool TryInsertParticle(Parallelepiped particle, GenerationInfo? info = null)
+    public bool TryInsertParticle(Parallelepiped particle, GenerationInfo? info = null, ParticleGenerationInfo? particleInfo = null)
     {
         TernaryTreeNodeParallelepiped deepestNodeParallelepipedForParticle = FindDeepestNodeForParticle(this, particle);
         var nearParticles = deepestNodeParallelepipedForParticle.GetParticles();
 
-        if (nearParticles.Any(particleToCheck => IntersectionService.IsIntersect(particleToCheck, particle, info: info)))
+        // Count particles checked in the first node
+        foreach (var particleToCheck in nearParticles)
         {
-            info?.IncrementFirstNodeIntersectionFindTimes();
-            return false;
+            particleInfo?.IncrementParticlesCheckedForIntersection();
+            if (IntersectionService.IsIntersect(particleToCheck, particle, info: info, particleInfo: particleInfo))
+            {
+                info?.IncrementFirstNodeIntersectionFindTimes();
+                particleInfo?.IncrementFirstNodeIntersectionFindTimes();
+                return false;
+            }
         }
-        if (deepestNodeParallelepipedForParticle._neighbors
-                .SelectMany(x => x.GetParticles()).Any(particleToCheck => IntersectionService.IsIntersect(particleToCheck, particle, info: info)))
+        
+        // Count particles checked in neighbor nodes
+        var neighborParticles = deepestNodeParallelepipedForParticle._neighbors
+            .SelectMany(x => x.GetParticles()).ToList();
+        foreach (var particleToCheck in neighborParticles)
         {
-            info?.IncrementTotalNeighborsNodesCheckedCount();
-            return false;
+            particleInfo?.IncrementParticlesCheckedForIntersection();
+            if (IntersectionService.IsIntersect(particleToCheck, particle, info: info, particleInfo: particleInfo))
+            {
+                info?.IncrementTotalNeighborsNodesCheckedCount();
+                particleInfo?.IncrementTotalNeighborsNodesCheckedCount();
+                return false;
+            }
         }
         
         deepestNodeParallelepipedForParticle._particles.Add(particle);

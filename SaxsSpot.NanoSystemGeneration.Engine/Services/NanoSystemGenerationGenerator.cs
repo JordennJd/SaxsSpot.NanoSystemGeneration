@@ -2,6 +2,7 @@ using MathNet.Numerics;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.AnalyzeModels;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.Enums;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationInfo;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationParameters;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
@@ -17,6 +18,11 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 	private GenerationZone? _generationZone;
 	private GenerationZone? _excessedGenerationZone;
 	private bool _isDistributed = false;
+	
+	/// <summary>
+	/// Information about the generation process, including metrics for each particle
+	/// </summary>
+	public GenerationInfo? GenerationInfo { get; private set; }
 
 	public Task<List<Particle>> GenerateSystem()
 	{
@@ -51,7 +57,7 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 			.Select(x => (Sphere)x)
 			.ToList();
 			
-			var info = new GenerationInfo();
+			GenerationInfo = new GenerationInfo();
 			var globalSizeFloat = (float)_generationZone.GlobalSize;
 			try
 			{
@@ -61,23 +67,38 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 				{
 					cancellationToken.ThrowIfCancellationRequested();
 					
+					var particleInfo = GenerationInfo.CreateParticleInfo(handledParticles);
+					var startTime = DateTime.UtcNow;
+					
+					// Store particle size
+					particleInfo.SetVolume(particle.GetVolume());
+					particleInfo.SetDiameter(particle.GetDiameter());
+					
 					progress?.Report(100f * handledParticles / spheres.Count);
 					for (var i = 0; i < attemptCount; i++)
-					{						
+					{
+						particleInfo.IncrementTotalAttempts();
 						ParticleManipulator.ChangePosition(particle, globalSizeFloat);
 	 
 						if (!IntersectionService.IsParticleInsideCubeZoneSphere(particle, _generationZone))
 						{
+							particleInfo.IncrementOutOfZoneAttempts();
 							continue;
 						}
 
-						var isAdded = tree.TryInsertParticle(particle, info);
+						var isAdded = tree.TryInsertParticle(particle, GenerationInfo, particleInfo);
 
 						if (isAdded)
 						{
+							GenerationInfo.IncrementPositiveAttempts();
+							particleInfo.IncrementPositiveAttempts();
 							break;
 						}
 					}
+					
+					// Calculate generation time
+					var endTime = DateTime.UtcNow;
+					particleInfo.SetGenerationTime(endTime - startTime);
 					
 					handledParticles++;
 				}
@@ -121,7 +142,7 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 				.Select(x => (Parallelepiped)x)
 				.ToList();
 			
-			var info = new GenerationInfo();
+			GenerationInfo = new GenerationInfo();
 			var globalSizeFloat = (float)_generationZone.GlobalSize;
 			try
 			{
@@ -131,23 +152,39 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 				{
 					cancellationToken.ThrowIfCancellationRequested();
 					
+					var particleInfo = GenerationInfo.CreateParticleInfo(handledParticles);
+					var startTime = DateTime.UtcNow;
+					
+					// Store particle size
+					particleInfo.SetVolume(particle.GetVolume());
+					particleInfo.SetDiameter(particle.GetDiameter());
+					
 					progress?.Report(100f * handledParticles / spheres.Count);
 					for (var i = 0; i < attemptCount; i++)
 					{
+						GenerationInfo.IncrementTotalAttempts();
+						particleInfo.IncrementTotalAttempts();
 						ParticleManipulator.ChangePosition(particle, globalSizeFloat);
 	 
 						if (!IntersectionService.IsParticleInsideZoneParallelepiped(particle, _generationZone))
 						{
+							particleInfo.IncrementOutOfZoneAttempts();
 							continue;
 						}
 
-						var isAdded = tree.TryInsertParticle(particle, info);
+						var isAdded = tree.TryInsertParticle(particle, GenerationInfo, particleInfo);
 
 						if (isAdded)
 						{
+							GenerationInfo.IncrementPositiveAttempts();
+							particleInfo.IncrementPositiveAttempts();
 							break;
 						}
 					}
+					
+					// Calculate generation time
+					var endTime = DateTime.UtcNow;
+					particleInfo.SetGenerationTime(endTime - startTime);
 					
 					handledParticles++;
 				}
