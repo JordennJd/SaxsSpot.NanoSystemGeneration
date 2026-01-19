@@ -234,7 +234,7 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 
 		var volumeSum = _particles.Sum(x => x.GetVolume());
 
-		var c = 0.1f;
+		var c = 0.001f;
 		
 		//TODO логика обработки excess
 		if (generationParameters.Excess != 0)

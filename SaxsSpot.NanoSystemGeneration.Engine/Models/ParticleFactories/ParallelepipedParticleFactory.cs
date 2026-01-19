@@ -21,7 +21,7 @@ public class ParallelepipedParticleFactory : ParticleFactory
         
         var list = new List<Particle>();
 		
-        var gamma = new Gamma(parallelepipedGenerationParameters!.K, parallelepipedGenerationParameters.Theta);
+        var gamma = new Gamma(parallelepipedGenerationParameters!.K, 1.0/parallelepipedGenerationParameters.Theta);
 		
         for(var i = 0; i< parameters.Count; i++)
         {
@@ -31,7 +31,7 @@ public class ParallelepipedParticleFactory : ParticleFactory
 		
         return list;
     }
-    
+
     private Parallelepiped GenerateSingleParallelepiped(float min, float max, Gamma gamma, float? epsilon)
     {
         switch (max.CompareTo(min))
