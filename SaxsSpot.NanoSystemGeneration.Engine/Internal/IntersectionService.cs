@@ -131,7 +131,7 @@ internal static class IntersectionService
 		var dz = Pow(par.Z - vector[2], 2);
 		if (dx + dy + dz > outerRadius)
 			return false;
-		if (dx + dy + dz < innerRadius)
+		if (Sqrt(dx + dy + dz) < innerRadius)
 			return true;
 		
 		var vec = Vector<float>.Build.DenseOfArray([vector[0], vector[1], vector[2]]);
