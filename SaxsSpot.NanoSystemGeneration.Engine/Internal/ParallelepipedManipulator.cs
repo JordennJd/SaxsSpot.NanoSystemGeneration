@@ -40,7 +40,7 @@ internal static class ParallelepipedManipulator
 			
 			par.Edges!.AddRange([A, B, C, D, A1, B1, C1, D1]);
 			var matrix = DoParallelepipedRotate(par.Edges, par.Phi, par.Theta, par.Zenit);
-			par.BackRotateMatrix = matrix;
+			par.BackRotateMatrix = matrix.Transpose();
 			DoParallelepipedTransform(par.Edges, par.X, par.Y, par.Z);
 		}
 	}

@@ -33,7 +33,7 @@ public static class NanosystemAnalyzer
 		    InnerRadius = index == 0 ? 0 : radii[index - 1],
 		    OuterRadius = radius,
 	    }).ToList();
-
+		
 		particles
 			.AsParallel()
 			.OfType<Parallelepiped>()
@@ -47,14 +47,13 @@ public static class NanosystemAnalyzer
 	    {
 		    var points = RandomVectorGenerator.GenerateRandomVectors(
 			    vectorCount / zoneCount,
-			    generationZone,
-			    bound.InnerRadius,
-			    bound.OuterRadius
+			    generationZone
 		    ).Where(x => x.L2Norm() >= bound.InnerRadius && x.L2Norm() <= bound.OuterRadius);
 		    
 		    var pointsInParticle = 0f;
-
-		    foreach (var paricle in particles.Where(x => IntersectionService.IsParticleBelongsZone(x, bound.OuterRadius, bound.OuterRadius - bound.InnerRadius)))
+		    var inBound = particles.Where(x =>
+			    IntersectionService.IsParticleBelongsZone(x, bound.OuterRadius, bound.OuterRadius - bound.InnerRadius));
+		    foreach (var paricle in inBound)
 		    {
 			    foreach (var point in points)
 			    {
