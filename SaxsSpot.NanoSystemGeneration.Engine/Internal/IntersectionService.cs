@@ -123,9 +123,16 @@ internal static class IntersectionService
 	public static bool IsPointInParallelepiped(Vector<float> vector, Particle parallelepiped)
 	{
 		var par = parallelepiped as Parallelepiped;
-		if (Sqrt(Pow(par.X - vector[0], 2) + Pow(par.Y - vector[1], 2) +
-				 Pow(par.Z - vector[2], 2)) > Sqrt(Pow(par.A/2, 2) + Pow(par.A/2, 2) + Pow(par.A/2 * par.E, 2)))
+		var outerRadius = (Pow(par.A/2, 2) + Pow(par.A/2, 2) + Pow(par.A/2 * par.E, 2));
+		var innerRadius = par.A/2;
+
+		var dx = Pow(par.X - vector[0], 2);
+		var dy = Pow(par.Y - vector[1], 2);
+		var dz = Pow(par.Z - vector[2], 2);
+		if (dx + dy + dz > outerRadius)
 			return false;
+		if (dx + dy + dz < innerRadius)
+			return true;
 		
 		var vec = Vector<float>.Build.DenseOfArray([vector[0], vector[1], vector[2]]);
 		vec = ParallelepipedManipulator
@@ -302,17 +309,19 @@ internal static class IntersectionService
 
 		if (particle.ParticleKind == ParticleKind.Parallelepiped)
 		{
+			var par = particle as Parallelepiped;
+			var centerDistance = Sqrt(Pow(particle.X, 2) + Pow(particle.Y, 2) + Pow(particle.Z, 2));
+			var innerRadius = par.A/2; //TODO if E == 1
+			
+			if (outerBound > centerDistance - innerRadius && innerBound < centerDistance + innerRadius)
+			{
+				return true;
+			}
+			
 			var edges = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates((Parallelepiped)particle);
 			var borders = ParallelepipedCoverer.FillBorders((Parallelepiped)particle, edges, 5);
 			foreach (var edge in borders.SelectMany(x => x))
 			{
-				var centerDistance = Sqrt(Pow(particle.X, 2) + Pow(particle.Y, 2) + Pow(particle.Z, 2));
-
-				if (outerBound > centerDistance && innerBound < centerDistance)
-				{
-					return true;
-				}
-
 				var distance = Sqrt(Pow(edge[0], 2) + Pow(edge[1], 2) + Pow(edge[2], 2));
 			
 				if (distance > innerBound && distance < outerBound)
