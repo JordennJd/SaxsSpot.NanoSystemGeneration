@@ -86,7 +86,7 @@ public class ParticleGenerationTests
     }
     
     [Test]
-    [TestCase(1f, 10000, 0.2, null, 2f, 6f, 0.1f, 1.5f, 1.0018f,
+    [TestCase(1f, 10000, 0.2, null, 2f, 6f, 0.1f, 1.5f, 0,
         ParticleKind.Parallelepiped)]
     public async Task GenerateAndAnalyze(
         float epsilon,
@@ -129,9 +129,12 @@ public class ParticleGenerationTests
         var generationZone = await nanoSystemGenerator.GetGenerationZone();
         await File.AppendAllLinesAsync($"{basePath}/analyze_system_par", distributeParticles.Select(x => x.ToString()));
 
-        var analyze = NanosystemAnalyzer.GetNanosystemAnalyze(distributeParticles,generationZone, 20, 100000);
+        var analyze = NanosystemAnalyzer.GetNanosystemAnalyze(distributeParticles,generationZone, 2, 1000000);
         TestContext.Progress.WriteLine("Analyzing system...");
-        
+        await File.AppendAllLinesAsync($"{basePath}/log01",
+        [$"particleKind: {particleKind} count: {count} nc: {numericalConcentration} gs: {globalSize} excess: {excess}",
+            "parameters:", $"realNc: {distributeParticles.Sum(x => x.GetVolume()) / (await nanoSystemGenerator.GetGenerationZone()).GetVolume()} realCount: {distributeParticles.Count}"]);
+
         await File.AppendAllLinesAsync($"{basePath}/analyze", analyze.Select(x => $"{x.ZoneIndex}: {x.Concentration}"));
     }
     

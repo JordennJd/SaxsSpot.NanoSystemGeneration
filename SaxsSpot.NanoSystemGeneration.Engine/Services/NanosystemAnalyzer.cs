@@ -16,12 +16,13 @@ public static class NanosystemAnalyzer
 	{
 		// V = 4/3*pi*r^3
 		// r = (V/(4/3*pi))^1/3
-		var globalVolume = generationZone.GetVolume();
-		var volumeStep = globalVolume / (zoneCount-1);
+		var boundCount = zoneCount + 1;
+		var globalVolume = generationZone.GetInnerSphereVolume();
+		var volumeStep = globalVolume / (boundCount-1);
 
 		var currentRadius = 0d;
-		var radii = new List<double>(zoneCount);
-		for(var i = 0; i < (zoneCount-1); i++)
+		var radii = new List<double>(boundCount);
+		for(var i = 0; i < (boundCount-1); i++)
 		{
 			currentRadius = Math.Pow((volumeStep + (4f/3f*Math.PI*Math.Pow(currentRadius, 3))) / (4f/3f * Math.PI), 1f / 3f);
 			radii.Add(currentRadius);
@@ -40,22 +41,23 @@ public static class NanosystemAnalyzer
 			.ForAll(ParallelepipedManipulator.PrepareParallelepiped);
 
     	var result = new ConcurrentBag<ZoneConcentrationAnalyze>();
+	    var points = ParallelepipedCoverer.FillGenerationZoneWithPoints(
+		    generationZone, vectorCount
+	    );
 	    Parallel.ForEach(bounds.OrderBy(p => p.ZoneIndex), new ParallelOptions()
 	    {
 		    MaxDegreeOfParallelism = Environment.ProcessorCount
 	    }, bound =>
 	    {
-		    var points = RandomVectorGenerator.GenerateRandomVectors(
-			    vectorCount / zoneCount,
-			    generationZone
-		    ).Where(x => x.L2Norm() >= bound.InnerRadius && x.L2Norm() <= bound.OuterRadius);
+		    var currentPoints = points.Where(x => x.L2Norm() >= bound.InnerRadius && x.L2Norm() <= bound.OuterRadius);
 		    
 		    var pointsInParticle = 0f;
 		    var inBound = particles.Where(x =>
 			    IntersectionService.IsParticleBelongsZone(x, bound.OuterRadius, bound.OuterRadius - bound.InnerRadius));
+		    
 		    foreach (var paricle in inBound)
 		    {
-			    foreach (var point in points)
+			    foreach (var point in currentPoints)
 			    {
 				    if (IntersectionService.IsPointInsideParticle(point, paricle))
 				    {
@@ -64,7 +66,7 @@ public static class NanosystemAnalyzer
 			    }
 		    }
 
-		    result.Add(new ZoneConcentrationAnalyze(bound.ZoneIndex, pointsInParticle / points.Count()));
+		    result.Add(new ZoneConcentrationAnalyze(bound.ZoneIndex, pointsInParticle / currentPoints.Count()));
 	    });
     	
     	return result.OrderBy(x => x.ZoneIndex).ToList();

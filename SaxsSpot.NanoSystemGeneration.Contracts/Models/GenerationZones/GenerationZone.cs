@@ -14,4 +14,14 @@ public record GenerationZone(double GlobalSize, GenerationZoneForm GenerationZon
             _ => throw new InvalidOperationException("Not supported generation zone form.")
         };
     }
+    
+    public double GetInnerSphereVolume()
+    {
+        return GenerationZoneForm switch
+        {
+            GenerationZoneForm.Cube => (4d / 3d) * Math.PI * (GlobalSize/2) * (GlobalSize/2) * (GlobalSize/2),
+            GenerationZoneForm.Sphere => (4d / 3d) * Math.PI * GlobalSize * GlobalSize * GlobalSize,
+            _ => throw new InvalidOperationException("Not supported generation zone form.")
+        };
+    }
 }

@@ -140,7 +140,14 @@ internal static class IntersectionService
 					.DoVectorTransform(vec, -par.X, -par.Y, -par.Z), par.Phi,
 		par.Theta, par.Zenit, par.BackRotateMatrix);
 
-		return IsVectorInBounds(vec, par);
+		if (IsVectorInBounds(vec, par))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 	public static bool IsPointInSphere(Vector<float> vector, Particle particle)

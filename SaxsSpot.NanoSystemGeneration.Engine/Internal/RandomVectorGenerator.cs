@@ -80,9 +80,9 @@ public static class RandomVectorGenerator
             {
                 vector = Vector<float>.Build.DenseOfArray(new float[]
                 {
-                    (random.NextSingle() * 2 - 1) * (float)zone.GlobalSize / 2,
-                    (random.NextSingle() * 2 - 1) * (float)zone.GlobalSize / 2,
-                    (random.NextSingle() * 2 - 1) * (float)zone.GlobalSize / 2
+                    (random.NextSingle()) * (float)zone.GlobalSize/2 * (random.NextSingle() >= 0.5 ? -1 : 1),
+                    (random.NextSingle()) * (float)zone.GlobalSize/2 * (random.NextSingle() >= 0.5 ? -1 : 1),
+                    (random.NextSingle()) * (float)zone.GlobalSize/2 * (random.NextSingle() >= 0.5 ? -1 : 1)
                 });
             }
             else

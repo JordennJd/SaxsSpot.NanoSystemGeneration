@@ -2,6 +2,8 @@ using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Complex32;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
+using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Internal;
 
@@ -113,4 +115,44 @@ internal static  class ParallelepipedCoverer
     //         return MatrixOfVectors;
     //     });
     // }
+
+    public static Vector<float>[] FillGenerationZoneWithPoints(GenerationZone zone, int count)
+    {
+        if (count <= 0)
+            return [];
+
+        var halfSize = zone.GenerationZoneForm == GenerationZoneForm.Cube ? 
+            zone.GlobalSize / 2 : 
+            zone.GlobalSize;
+    
+        int pointsPerAxis = (int)Math.Ceiling(Math.Pow(count, 1f / 3f));
+    
+        int totalPoints = (int)Math.Pow(pointsPerAxis, 3);
+    
+        var xValues = Generate.LinearSpaced(pointsPerAxis, -halfSize, halfSize);
+        var yValues = Generate.LinearSpaced(pointsPerAxis, -halfSize, halfSize);
+        var zValues = Generate.LinearSpaced(pointsPerAxis, -halfSize, halfSize);
+    
+        var points = new Vector<float>[totalPoints];
+        int index = 0;
+    
+        for (int i = 0; i < pointsPerAxis; i++)
+        {
+            for (int j = 0; j < pointsPerAxis; j++)
+            {
+                for (int k = 0; k < pointsPerAxis; k++)
+                {
+                    points[index] = Vector<float>.Build.Dense([
+                        (float)xValues[i], 
+                        (float)yValues[j], 
+                        (float)zValues[k]
+                    ]);
+                    index++;
+                }
+            }
+        }
+    
+        return points;
+    }
+
 }
