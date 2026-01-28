@@ -50,7 +50,7 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 		if (generationParameters.GetParticleKind() == ParticleKind.Sphere)
 		{
 			var tree = new TernaryTreeNodeSphere(
-				_particles!.MaxBy(x => x.GetDiameter())!.GetDiameter() * 2, _generationZone.GlobalSize);
+				_particles!.MaxBy(x => x.GetDiameter())!.GetDiameter(), _generationZone.GlobalSize);
 			
 			var spheres = _particles
 			.OrderByDescending(p => p.GetVolume())
@@ -135,7 +135,7 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 		if (generationParameters.GetParticleKind() == ParticleKind.Parallelepiped)
 		{
 			var tree = new TernaryTreeNodeParallelepiped(
-				_particles!.MaxBy(x => x.GetDiameter())!.GetDiameter() * 2, _generationZone.GlobalSize);
+				_particles!.MaxBy(x => x.GetDiameter())!.GetDiameter(), _generationZone.GlobalSize);
 			
 			var spheres = _particles
 				.OrderByDescending(p => p.GetVolume())

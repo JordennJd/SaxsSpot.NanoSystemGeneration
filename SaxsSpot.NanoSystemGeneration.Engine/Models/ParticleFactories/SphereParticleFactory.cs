@@ -31,20 +31,8 @@ public class SphereParticleFactory : ParticleFactory
     
     private static Sphere GenerateSingleSphere(float min, float max, Gamma gamma)
     {
-        if (max.CompareTo(min) < 0)
-        {
-            throw new ArgumentException("max - min < 0");
-        }
-
-        if (min.CompareTo(max) == 0)
-        {
-            return new Sphere(min);		
-        }
-
         var rawA = gamma.Sample();
-        
-        var scaledA = min + (rawA / (rawA + 1)) * (max - min);
-        
-        return new Sphere((float)scaledA, 0, 0, 0);	
+                
+        return new Sphere((float)rawA, 0, 0, 0);	
     }
 }
