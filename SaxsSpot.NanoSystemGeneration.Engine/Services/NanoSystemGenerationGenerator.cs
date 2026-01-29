@@ -108,7 +108,7 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 					_isDistributed = true;
 					return tree
 						.GetParticles()
-						// .Where(particle => IntersectionService.IsParticleInsideSphereCubeZoneSphere(particle, _excessedGenerationZone))
+						.Where(particle => IntersectionService.IsParticleInsideSphereCubeZoneSphere(particle, _excessedGenerationZone))
 						.Select(Particle (x) => x)
 						.ToList();
 				}
@@ -165,12 +165,12 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 						GenerationInfo.IncrementTotalAttempts();
 						particleInfo.IncrementTotalAttempts();
 						ParticleManipulator.ChangePosition(particle, globalSizeFloat);
-	 
-						if (!IntersectionService.IsParticleInsideZoneParallelepiped(particle, _generationZone))
-						{
-							particleInfo.IncrementOutOfZoneAttempts();
-							continue;
-						}
+	 				
+						// if (!IntersectionService.IsParticleInsideZoneParallelepiped(particle, _generationZone))
+						// {
+						// 	particleInfo.IncrementOutOfZoneAttempts();
+						// 	continue;
+						// }
 
 						var isAdded = tree.TryInsertParticle(particle, GenerationInfo, particleInfo);
 

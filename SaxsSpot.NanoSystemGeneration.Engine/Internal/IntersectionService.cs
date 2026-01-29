@@ -397,18 +397,13 @@ internal static class IntersectionService
 	
 	public static bool IsParallelepipedInBoundsOfSphereZone(double globalRadius, Parallelepiped parallelepiped)
 	{
-		var par = ParallelepipedManipulator.ParallelepipedToParallelepipedCoordinates(parallelepiped);
+		return Sqrt(Pow(parallelepiped.X, 2) + Pow(parallelepiped.Y, 2) + Pow(parallelepiped.Z, 2)) <= globalRadius;
 
-		return IsVectorInBoundsSphere(par.A, globalRadius) && IsVectorInBoundsSphere(par.B, globalRadius) &&
-		       IsVectorInBoundsSphere(par.C, globalRadius)
-		       && IsVectorInBoundsSphere(par.D, globalRadius) && IsVectorInBoundsSphere(par.A1, globalRadius) &&
-		       IsVectorInBoundsSphere(par.B1, globalRadius)
-		       && IsVectorInBoundsSphere(par.C1, globalRadius) && IsVectorInBoundsSphere(par.D1, globalRadius);
 	}
 
 	public static bool IsSphereInBoundsOfSphereZone(double globalRadius, Sphere sphere)
 	{
-		return sphere.Radius + Sqrt(Pow(sphere.X, 2) + Pow(sphere.Y, 2) + Pow(sphere.Z, 2)) <= globalRadius;
+		return Sqrt(Pow(sphere.X, 2) + Pow(sphere.Y, 2) + Pow(sphere.Z, 2)) <= globalRadius;
 	}
 	
 	public static bool IsSphereInBoundsOfCubeZone(double globalRadius, Sphere sphere)
