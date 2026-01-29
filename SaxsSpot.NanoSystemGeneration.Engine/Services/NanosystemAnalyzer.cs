@@ -41,8 +41,8 @@ public static class NanosystemAnalyzer
 			.ForAll(ParallelepipedManipulator.PrepareParallelepiped);
 
     	var result = new ConcurrentBag<ZoneConcentrationAnalyze>();
-	    var points = ParallelepipedCoverer.FillGenerationZoneWithPoints(
-		    generationZone, vectorCount
+	    var points = RandomVectorGenerator.GenerateRandomVectors(
+		    vectorCount, generationZone
 	    );
 	    Parallel.ForEach(bounds.OrderBy(p => p.ZoneIndex), new ParallelOptions()
 	    {
