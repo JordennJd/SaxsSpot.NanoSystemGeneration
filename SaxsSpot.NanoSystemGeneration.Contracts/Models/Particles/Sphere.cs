@@ -7,6 +7,17 @@ public record Sphere(float Radius, float X = 0, float Y = 0, float Z = 0) : Part
 {
     public override ParticleKind ParticleKind { get; init; } = ParticleKind.Sphere;
     
+    private float _sqrRadius = -1;
+    public double GetSqrRadius()
+    {
+        if(_sqrRadius == -1)
+        {
+            _sqrRadius = Radius*Radius;
+        }
+		
+        return _sqrRadius;
+    }
+    
     public override double GetVolume()
     {
         if(_volume == -1)

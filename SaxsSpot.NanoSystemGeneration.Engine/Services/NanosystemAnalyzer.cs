@@ -54,14 +54,30 @@ public static class NanosystemAnalyzer
 		    var pointsInParticle = 0f;
 		    var inBound = particles.Where(x =>
 			    IntersectionService.IsParticleBelongsZone(x, bound.OuterRadius, bound.OuterRadius - bound.InnerRadius));
-		    
-		    foreach (var paricle in inBound)
+
+		    if (inBound.FirstOrDefault() is Sphere)
 		    {
-			    foreach (var point in currentPoints)
+			    foreach (var paricle in inBound)
 			    {
-				    if (IntersectionService.IsPointInsideParticle(point, paricle))
+				    foreach (var point in currentPoints)
 				    {
-					    pointsInParticle++;
+					    if (IntersectionService.IsPointInSphere(point, paricle))
+					    {
+						    pointsInParticle++;
+					    }
+				    }
+			    }
+		    }
+		    else if (inBound.FirstOrDefault() is Parallelepiped)
+		    {
+			    foreach (var paricle in inBound)
+			    {
+				    foreach (var point in currentPoints)
+				    {
+					    if (IntersectionService.IsPointInParallelepiped(point, paricle))
+					    {
+						    pointsInParticle++;
+					    }
 				    }
 			    }
 		    }

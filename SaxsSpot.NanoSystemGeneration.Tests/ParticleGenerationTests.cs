@@ -12,7 +12,7 @@ namespace SaxsSpot.NanoSystemGeneration.Tests;
 public class ParticleGenerationTests
 {
     private readonly static string basePath =
-        "C:\\Projects\\SaxsSpot\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\";
+        "/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests";
     
     [Test]
     [TestCase(1f, 100000, 0.5, null, 2f, 6f, 0.4f, 3f, 1.1f,
@@ -86,7 +86,7 @@ public class ParticleGenerationTests
     }
     
     [Test]
-    [TestCase(1f, 10000, 0.3, null, 2f, 6f, 0.4f, 3f, 1.018f,
+    [TestCase(1f, 100000, 0.3, null, 2f, 6f, 0.4f, 3f, 1.018f,
         ParticleKind.Sphere)]
     public async Task GenerateAndAnalyze(
         float epsilon,

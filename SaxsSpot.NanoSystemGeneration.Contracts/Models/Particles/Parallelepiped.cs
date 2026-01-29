@@ -43,7 +43,7 @@ public record Parallelepiped(float A, float E, float X = 0, float Y = 0, float Z
 
     public override float GetDiameter()
     {
-        return MathF.Sqrt(A * A + A * E + A * A);
+        return MathF.Sqrt(A/2 * A/2 + A/2 * E + A/2 * A/2) * 2;
     }
 
     public override void ChangePosition(float x, float y, float z, float fi = 0, float theta = 0, float zenit = 0)

@@ -153,7 +153,7 @@ internal static class IntersectionService
 	public static bool IsPointInSphere(Vector<float> vector, Particle particle)
 	{
 		var sphere = particle as Sphere;
-		return Pow(sphere.X - vector[0], 2) + Pow(sphere.Y - vector[1], 2) + Pow(sphere.Z - vector[2], 2) <= sphere.Radius*sphere.Radius;
+		return Pow(sphere.X - vector[0], 2) + Pow(sphere.Y - vector[1], 2) + Pow(sphere.Z - vector[2], 2) <= sphere.GetSqrRadius();
 	}
 
 	/// <summary>
@@ -397,13 +397,13 @@ internal static class IntersectionService
 	
 	public static bool IsParallelepipedInBoundsOfSphereZone(double globalRadius, Parallelepiped parallelepiped)
 	{
-		return Sqrt(Pow(parallelepiped.X, 2) + Pow(parallelepiped.Y, 2) + Pow(parallelepiped.Z, 2)) <= globalRadius;
+		return Sqrt(Pow(parallelepiped.X, 2) + Pow(parallelepiped.Y, 2) + Pow(parallelepiped.Z, 2)) - parallelepiped.A <= globalRadius;
 
 	}
 
 	public static bool IsSphereInBoundsOfSphereZone(double globalRadius, Sphere sphere)
 	{
-		return Sqrt(Pow(sphere.X, 2) + Pow(sphere.Y, 2) + Pow(sphere.Z, 2)) <= globalRadius;
+		return Sqrt(Pow(sphere.X, 2) + Pow(sphere.Y, 2) + Pow(sphere.Z, 2)) - sphere.Radius <= globalRadius;
 	}
 	
 	public static bool IsSphereInBoundsOfCubeZone(double globalRadius, Sphere sphere)
@@ -426,7 +426,7 @@ internal static class IntersectionService
 		
 		switch (particle.ParticleKind)
 		{
-			case ParticleKind.Sphere:
+			case ParticleKind.Sphere: 
 				return IsPointInSphere(vector, particle);
 			case ParticleKind.Parallelepiped:
 				return IsPointInParallelepiped(vector, particle);
