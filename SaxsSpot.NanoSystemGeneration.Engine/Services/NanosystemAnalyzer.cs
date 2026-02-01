@@ -41,7 +41,7 @@ public static class NanosystemAnalyzer
 			.OfType<Parallelepiped>()
 			.ForAll(ParallelepipedManipulator.PrepareParallelepiped);
 
-		var tree = new TernaryTreeNode(particles.MaxBy(x => x.GetDiameter())!.GetDiameter(),
+		var tree = new TernaryTreeNode(particles.MaxBy(x => x.GetDiameter())!.GetDiameter()/4,
 			(generationZone.GenerationZoneForm == GenerationZoneForm.Cube
 				? generationZone.GlobalSize
 				: generationZone.GlobalSize * 2) + 1);
@@ -49,7 +49,7 @@ public static class NanosystemAnalyzer
 		foreach (var particle in particles)
 		{
 			tree.InsertParticle(particle);
-		}
+		} 
 
     	var result = new ConcurrentBag<ZoneConcentrationAnalyze>();
 	    var points = RandomVectorGenerator.GenerateRandomVectors(
