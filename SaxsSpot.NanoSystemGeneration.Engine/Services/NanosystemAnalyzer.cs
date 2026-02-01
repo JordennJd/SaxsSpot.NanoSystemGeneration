@@ -5,6 +5,7 @@ using SaxsSpot.NanoSystemGeneration.Contracts.Models.AnalyzeModels;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones;
 using SaxsSpot.NanoSystemGeneration.Contracts.Models.GenerationZones.Enums;
 using SaxsSpot.NanoSystemGeneration.Engine.Internal;
+using SaxsSpot.NanoSystemGeneration.Engine.Models.TernaryTree;
 
 namespace SaxsSpot.NanoSystemGeneration.Engine.Services;
 
@@ -40,6 +41,16 @@ public static class NanosystemAnalyzer
 			.OfType<Parallelepiped>()
 			.ForAll(ParallelepipedManipulator.PrepareParallelepiped);
 
+		var tree = new TernaryTreeNode(particles.MaxBy(x => x.GetDiameter())!.GetDiameter(),
+			(generationZone.GenerationZoneForm == GenerationZoneForm.Cube
+				? generationZone.GlobalSize
+				: generationZone.GlobalSize * 2) + 1);
+		
+		foreach (var particle in particles)
+		{
+			tree.InsertParticle(particle);
+		}
+
     	var result = new ConcurrentBag<ZoneConcentrationAnalyze>();
 	    var points = RandomVectorGenerator.GenerateRandomVectors(
 		    vectorCount, generationZone
@@ -57,9 +68,12 @@ public static class NanosystemAnalyzer
 
 		    if (inBound.FirstOrDefault() is Sphere)
 		    {
-			    foreach (var paricle in inBound)
+			    foreach (var point in currentPoints)
 			    {
-				    foreach (var point in currentPoints)
+				    var node = tree.FindDeepestNodeForVector(tree, point);
+
+				    var currentParticles = node.GetParticles().Union(node._neighbors.SelectMany(x => x.GetParticles()));
+				    foreach (var paricle in currentParticles)
 				    {
 					    if (IntersectionService.IsPointInSphere(point, paricle))
 					    {
@@ -67,12 +81,16 @@ public static class NanosystemAnalyzer
 					    }
 				    }
 			    }
+
 		    }
 		    else if (inBound.FirstOrDefault() is Parallelepiped)
 		    {
-			    foreach (var paricle in inBound)
+			    foreach (var point in currentPoints)
 			    {
-				    foreach (var point in currentPoints)
+				    var node = tree.FindDeepestNodeForVector(tree, point);
+
+				    var currentParticles = node.GetParticles().Union(node._neighbors.SelectMany(x => x.GetParticles()));
+				    foreach (var paricle in currentParticles)
 				    {
 					    if (IntersectionService.IsPointInParallelepiped(point, paricle))
 					    {

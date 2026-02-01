@@ -46,7 +46,7 @@ public class IntersectionServiceTest
     
     [Test]
     [TestCase(1f, 10000, 0.3, null, 2f, 6f, 2f, 50f, 0,
-        ParticleKind.Parallelepiped)]
+        ParticleKind.Sphere)]
       public async Task GenerateAndAnalyze(
         float epsilon,
         int count, 
@@ -114,9 +114,22 @@ public class IntersectionServiceTest
                 }
             }
         });
+        
+        var c3 = 0;
+        Parallel.ForEach(distributeParticles, particle =>
+        {
+            foreach (var point in points)
+            {
+                if (IntersectionService.IsPointInsideParticle(point, particle))
+                {
+                    Interlocked.Increment(ref c3);
+                }
+            }
+        });
 
         TestContext.Progress.WriteLine((double)c1 / (double)pointsOutsideInnerSphere.Count());
         TestContext.Progress.WriteLine((double)c2 / (double)pointsInsideInnerSphere.Count());
+        TestContext.Progress.WriteLine((double)c3 / (double)points.Count());
 
         TestContext.Progress.WriteLine(distributeParticles.Sum(x => x.GetVolume()) / (double)generationZone.GetVolume());
 

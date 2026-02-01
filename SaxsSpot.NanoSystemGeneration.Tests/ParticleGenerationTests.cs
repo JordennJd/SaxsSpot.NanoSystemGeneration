@@ -12,7 +12,7 @@ namespace SaxsSpot.NanoSystemGeneration.Tests;
 public class ParticleGenerationTests
 {
     private readonly static string basePath =
-        "/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests";
+        "C:\\Projects\\SaxsSpot\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\stuff";
     
     [Test]
     [TestCase(1f, 100000, 0.5, null, 2f, 6f, 0.4f, 3f, 1.1f,
@@ -86,7 +86,7 @@ public class ParticleGenerationTests
     }
     
     [Test]
-    [TestCase(1f, 100000, 0.3, null, 2f, 6f, 0.4f, 3f, 1.018f,
+    [TestCase(1f, 10000, 0.3, null, 2f, 6f, 0.4f, 3f, 1.025f,
         ParticleKind.Sphere)]
     public async Task GenerateAndAnalyze(
         float epsilon,
@@ -129,8 +129,8 @@ public class ParticleGenerationTests
         var generationZone = await nanoSystemGenerator.GetGenerationZone();
         await File.AppendAllLinesAsync($"{basePath}/analyze_system_par", distributeParticles.Select(x => x.ToString()));
 
-        var analyze = NanosystemAnalyzer.GetNanosystemAnalyze(distributeParticles,generationZone, 20, 1000000);
         TestContext.Progress.WriteLine("Analyzing system...");
+        var analyze = NanosystemAnalyzer.GetNanosystemAnalyze(distributeParticles,generationZone, 20, 10000000);
         await File.AppendAllLinesAsync($"{basePath}/log01",
         [$"particleKind: {particleKind} count: {count} nc: {numericalConcentration} gs: {globalSize} excess: {excess}",
             "parameters:", $"realNc: {distributeParticles.Sum(x => x.GetVolume()) / (await nanoSystemGenerator.GetGenerationZone()).GetVolume()} realCount: {distributeParticles.Count}"]);
