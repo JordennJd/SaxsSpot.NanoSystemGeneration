@@ -311,7 +311,7 @@ internal static class IntersectionService
 			var centerDistance = Sqrt(Pow(particle.X, 2) + Pow(particle.Y, 2) + Pow(particle.Z, 2));
 			var radius = ((Sphere)particle).Radius;
 			
-			return (centerDistance + radius) >= innerBound && (centerDistance - radius) <= outerBound;
+			return (centerDistance - radius) >= innerBound && (centerDistance + radius) <= outerBound;
 		}
 
 		if (particle.ParticleKind == ParticleKind.Parallelepiped)
