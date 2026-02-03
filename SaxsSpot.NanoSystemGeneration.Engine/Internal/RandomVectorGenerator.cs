@@ -67,7 +67,7 @@ public static class RandomVectorGenerator
 
     return list;
 }
-    public static List<Vector<float>> GenerateRandomVectors(int count, GenerationZone zone)
+    public static List<Vector<float>> GenerateRandomVectors(int count, GenerationZone zone, float rMax)
     {
         var random = new Random();
         var list = new List<Vector<float>>();
@@ -80,9 +80,9 @@ public static class RandomVectorGenerator
             {
                 vector = Vector<float>.Build.DenseOfArray(new float[]
                 {
-                    (random.NextSingle()) * (float)zone.GlobalSize/2 * (random.NextSingle() >= 0.5 ? -1 : 1),
-                    (random.NextSingle()) * (float)zone.GlobalSize/2 * (random.NextSingle() >= 0.5 ? -1 : 1),
-                    (random.NextSingle()) * (float)zone.GlobalSize/2 * (random.NextSingle() >= 0.5 ? -1 : 1)
+                    (random.NextSingle()) * ((float)zone.GlobalSize/2 + rMax) * (random.NextSingle() >= 0.5 ? -1 : 1),
+                    (random.NextSingle()) * ((float)zone.GlobalSize/2 + rMax) * (random.NextSingle() >= 0.5 ? -1 : 1),
+                    (random.NextSingle()) * ((float)zone.GlobalSize/2 + rMax) * (random.NextSingle() >= 0.5 ? -1 : 1)
                 });
             }
             else
@@ -98,7 +98,7 @@ public static class RandomVectorGenerator
                     });
                 } while (point.L2Norm() > 1);
 
-                vector = point * (float)zone.GlobalSize;
+                vector = point * ((float)zone.GlobalSize + rMax);
             }
 
             list.Add(vector);

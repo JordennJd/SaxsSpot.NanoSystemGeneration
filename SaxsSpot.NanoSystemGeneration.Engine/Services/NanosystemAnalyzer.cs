@@ -30,7 +30,8 @@ public static class NanosystemAnalyzer
 		// V = 4/3*pi*r^3
 		// r = (V/(4/3*pi))^1/3
 		var boundCount = zoneCount + 1;
-		var globalVolume = generationZone.GetInnerSphereVolumeWithMaxParticleRadius(particles.MaxBy(x => x.GetDiameter()).GetDiameter()/2);
+		var rmax = particles.MaxBy(x => x.GetDiameter()).GetDiameter() / 2;
+		var globalVolume = generationZone.GetInnerSphereVolumeWithMaxParticleRadius(rmax);
 		var volumeStep = globalVolume / (boundCount-1);
 
 		var currentRadius = 0d;
@@ -65,7 +66,7 @@ public static class NanosystemAnalyzer
 
     	var result = new ConcurrentBag<RadialAnalysisLayerResult>();
 	    var points = RandomVectorGenerator.GenerateRandomVectors(
-		    vectorCount, generationZone
+		    vectorCount, generationZone, rmax
 	    );
 	    Parallel.ForEach(bounds.OrderBy(p => p.ZoneIndex), new ParallelOptions()
 	    {
