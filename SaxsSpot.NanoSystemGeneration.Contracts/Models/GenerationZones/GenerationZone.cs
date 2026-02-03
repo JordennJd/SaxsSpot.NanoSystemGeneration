@@ -24,4 +24,14 @@ public record GenerationZone(double GlobalSize, GenerationZoneForm GenerationZon
             _ => throw new InvalidOperationException("Not supported generation zone form.")
         };
     }
+    
+    public double GetInnerSphereVolumeWithMaxParticleRadius(float maxParticleRadius)
+    {
+        return GenerationZoneForm switch
+        {
+            GenerationZoneForm.Cube => (4d / 3d) * Math.PI * (GlobalSize/2 + maxParticleRadius) * (GlobalSize/2 + maxParticleRadius) * (GlobalSize/2 + maxParticleRadius),
+            GenerationZoneForm.Sphere => (4d / 3d) * Math.PI * (GlobalSize  + maxParticleRadius) * (GlobalSize + maxParticleRadius) * (GlobalSize + maxParticleRadius),
+            _ => throw new InvalidOperationException("Not supported generation zone form.")
+        };
+    }
 }

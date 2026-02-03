@@ -30,7 +30,7 @@ public static class NanosystemAnalyzer
 		// V = 4/3*pi*r^3
 		// r = (V/(4/3*pi))^1/3
 		var boundCount = zoneCount + 1;
-		var globalVolume = generationZone.GetInnerSphereVolume();
+		var globalVolume = generationZone.GetInnerSphereVolumeWithMaxParticleRadius(particles.MaxBy(x => x.GetDiameter()).GetDiameter()/2);
 		var volumeStep = globalVolume / (boundCount-1);
 
 		var currentRadius = 0d;
