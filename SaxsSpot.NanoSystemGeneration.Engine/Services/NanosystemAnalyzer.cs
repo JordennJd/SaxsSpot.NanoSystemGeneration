@@ -15,6 +15,18 @@ public static class NanosystemAnalyzer
 		GetNanosystemAnalyze<T>
 		(ICollection<T> particles, GenerationZone generationZone, int zoneCount, int vectorCount) where T : Particle
 	{
+		var withLayers = GetNanosystemAnalyzeWithLayers(particles, generationZone, zoneCount, vectorCount);
+		return withLayers
+			.Select(x => new ZoneConcentrationAnalyze(x.ZoneIndex, x.NumericalConcentration))
+			.ToList();
+	}
+
+	/// <summary>
+	/// Returns radial analysis with layer bounds and point counts for persistence in DB.
+	/// </summary>
+	public static ICollection<RadialAnalysisLayerResult> GetNanosystemAnalyzeWithLayers<T>(
+		ICollection<T> particles, GenerationZone generationZone, int zoneCount, int vectorCount) where T : Particle
+	{
 		// V = 4/3*pi*r^3
 		// r = (V/(4/3*pi))^1/3
 		var boundCount = zoneCount + 1;
@@ -51,7 +63,7 @@ public static class NanosystemAnalyzer
 			tree.InsertParticle(particle);
 		} 
 
-    	var result = new ConcurrentBag<ZoneConcentrationAnalyze>();
+    	var result = new ConcurrentBag<RadialAnalysisLayerResult>();
 	    var points = RandomVectorGenerator.GenerateRandomVectors(
 		    vectorCount, generationZone
 	    );
@@ -60,7 +72,13 @@ public static class NanosystemAnalyzer
 		    MaxDegreeOfParallelism = Environment.ProcessorCount
 	    }, bound =>
 	    {
-		    var currentPoints = points.Where(x => x.L2Norm() >= bound.InnerRadius && x.L2Norm() <= bound.OuterRadius);
+		    var currentPoints = points.Where(x => x.L2Norm() >= bound.InnerRadius && x.L2Norm() <= bound.OuterRadius).ToList();
+		    var pointCount = currentPoints.Count;
+		    if (pointCount == 0)
+		    {
+			    result.Add(new RadialAnalysisLayerResult(bound.ZoneIndex, bound.InnerRadius, bound.OuterRadius, 0, 0));
+			    return;
+		    }
 		    
 		    var pointsInParticle = 0f;
 		    var inBound = particles.Where(x =>
@@ -100,7 +118,8 @@ public static class NanosystemAnalyzer
 			    }
 		    }
 
-		    result.Add(new ZoneConcentrationAnalyze(bound.ZoneIndex, pointsInParticle / currentPoints.Count()));
+		    var concentration = pointsInParticle / pointCount;
+		    result.Add(new RadialAnalysisLayerResult(bound.ZoneIndex, bound.InnerRadius, bound.OuterRadius, concentration, pointCount));
 	    });
     	
     	return result.OrderBy(x => x.ZoneIndex).ToList();
