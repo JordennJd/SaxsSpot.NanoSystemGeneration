@@ -75,7 +75,7 @@ public class IntersectionServiceTest
         var distributeParticles = await nanoSystemGenerator.DistributeParticles(new Progress<float>(), CancellationToken.None);
         var generationZone = await nanoSystemGenerator.GetGenerationZone();
 
-        var points = RandomVectorGenerator.GenerateRandomVectors(1000000, generationZone);
+        var points = RandomVectorGenerator.GenerateRandomVectors(1000000, generationZone, distributeParticles.MaxBy(x=>x.GetDiameter()).GetDiameter()/2);
 
         var pointsInsideInnerSphere = points
             .Where(x => x.L2Norm() >= 0 && x.L2Norm() <= (generationZone.GenerationZoneForm
