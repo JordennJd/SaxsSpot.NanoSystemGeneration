@@ -57,7 +57,7 @@ public static class NanosystemAnalyzer
 		var tree = new TernaryTreeNode(particles.MaxBy(x => x.GetDiameter())!.GetDiameter()/4,
 			(generationZone.GenerationZoneForm == GenerationZoneForm.Cube
 				? generationZone.GlobalSize
-				: generationZone.GlobalSize * 2) + 1);
+				: generationZone.GlobalSize * 2) + rmax*2);
 		
 		foreach (var particle in particles)
 		{
