@@ -51,7 +51,7 @@ public static class NanoSystemValidator
     
     public static (bool, int) ValidateSystemIntersections(IList<Particle> particles, GenerationZone zone, int pointCount, IProgress<float> progress = null)
     {
-        var randomVectors = RandomVectorGenerator.GenerateRandomVectors(pointCount, zone);
+        var randomVectors = RandomVectorGenerator.GenerateRandomVectors(pointCount, zone, particles.MaxBy(x=>x.GetDiameter()).GetDiameter()/2);
         var intersects = new ConcurrentBag<(List<Particle>, Vector<float>)>();
 
         var c = 0;
@@ -93,7 +93,7 @@ public static class NanoSystemValidator
     
     public static List<(List<Particle>, Vector<float>)> GetSystemIntersections(IList<Particle> particles, GenerationZone zone)
     {
-        var randomVectors = RandomVectorGenerator.GenerateRandomVectors(10000, zone);
+        var randomVectors = RandomVectorGenerator.GenerateRandomVectors(10000, zone, particles.MaxBy(x=>x.GetDiameter()).GetDiameter()/2);
         var intersects = new List<(List<Particle>, Vector<float>)>();
         foreach (var randomVector in randomVectors)
         {
