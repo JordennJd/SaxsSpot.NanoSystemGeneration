@@ -70,7 +70,7 @@ public static class NanosystemAnalyzer
 	    );
 	    Parallel.ForEach(bounds.OrderBy(p => p.ZoneIndex), new ParallelOptions()
 	    {
-		    MaxDegreeOfParallelism = Environment.ProcessorCount
+		    MaxDegreeOfParallelism = Environment.ProcessorCount - 1
 	    }, bound =>
 	    {
 		    var currentPoints = points.Where(x => x.L2Norm() >= bound.InnerRadius && x.L2Norm() <= bound.OuterRadius).ToList();

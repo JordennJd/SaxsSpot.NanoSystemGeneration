@@ -12,7 +12,7 @@ namespace SaxsSpot.NanoSystemGeneration.Tests;
 public class ParticleGenerationTests
 {
     private readonly static string basePath =
-        "C:\\Projects\\SaxsSpot\\SaxsSpot.NanoSystemGeneration\\SaxsSpot.NanoSystemGeneration.Tests\\stuff";
+        "/Users/danilalatyrev/Desktop/Projects/SaxsSpot/SaxsSpot.NanoSystemGeneration/SaxsSpot.NanoSystemGeneration.Tests";
     
     [Test]
     [TestCase(1f, 100000, 0.5, null, 2f, 6f, 0.4f, 3f, 1.1f,
@@ -130,7 +130,7 @@ public class ParticleGenerationTests
         await File.AppendAllLinesAsync($"{basePath}/analyze_system_par", distributeParticles.Select(x => x.ToString()));
 
         TestContext.Progress.WriteLine("Analyzing system...");
-        var analyze = NanosystemAnalyzer.GetNanosystemAnalyze(distributeParticles,generationZone, 20, 10000000);
+        var analyze = NanosystemAnalyzer.GetNanosystemAnalyze(distributeParticles,generationZone, 20, 5000000);
         await File.AppendAllLinesAsync($"{basePath}/log01",
         [$"particleKind: {particleKind} count: {count} nc: {numericalConcentration} gs: {globalSize} excess: {excess}",
             "parameters:", $"realNc: {distributeParticles.Sum(x => x.GetVolume()) / (await nanoSystemGenerator.GetGenerationZone()).GetVolume()} realCount: {distributeParticles.Count}"]);
