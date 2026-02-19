@@ -24,8 +24,10 @@ public static class NanosystemAnalyzer
 	/// <summary>
 	/// Returns radial analysis with layer bounds and point counts for persistence in DB.
 	/// </summary>
+	/// <param name="progress">Optional progress reporter; reports 0–100 as each layer completes.</param>
 	public static ICollection<RadialAnalysisLayerResult> GetNanosystemAnalyzeWithLayers<T>(
-		ICollection<T> particles, GenerationZone generationZone, int zoneCount, int vectorCount) where T : Particle
+		ICollection<T> particles, GenerationZone generationZone, int zoneCount, int vectorCount,
+		IProgress<float>? progress = null) where T : Particle
 	{
 		// V = 4/3*pi*r^3
 		// r = (V/(4/3*pi))^1/3
@@ -68,7 +70,9 @@ public static class NanosystemAnalyzer
 	    var points = RandomVectorGenerator.GenerateRandomVectors(
 		    vectorCount, generationZone, rmax
 	    );
-	    Parallel.ForEach(bounds.OrderBy(p => p.ZoneIndex), new ParallelOptions()
+	    var boundsList = bounds.OrderBy(p => p.ZoneIndex).ToList();
+	    var completedCount = 0;
+	    Parallel.ForEach(boundsList, new ParallelOptions()
 	    {
 		    MaxDegreeOfParallelism = Environment.ProcessorCount - 1
 	    }, bound =>
@@ -78,6 +82,7 @@ public static class NanosystemAnalyzer
 		    if (pointCount == 0)
 		    {
 			    result.Add(new RadialAnalysisLayerResult(bound.ZoneIndex, bound.InnerRadius, bound.OuterRadius, 0, 0));
+			    ReportProgress();
 			    return;
 		    }
 		    
@@ -121,7 +126,15 @@ public static class NanosystemAnalyzer
 
 		    var concentration = pointsInParticle / pointCount;
 		    result.Add(new RadialAnalysisLayerResult(bound.ZoneIndex, bound.InnerRadius, bound.OuterRadius, concentration, pointCount));
+		    ReportProgress();
 	    });
+
+	    void ReportProgress()
+	    {
+		    if (progress == null) return;
+		    var completed = Interlocked.Increment(ref completedCount);
+		    progress.Report((float)completed / boundsList.Count * 100f);
+	    }
     	
     	return result.OrderBy(x => x.ZoneIndex).ToList();
     }
