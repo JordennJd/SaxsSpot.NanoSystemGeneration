@@ -24,10 +24,17 @@ public static class NanosystemAnalyzer
 	/// <summary>
 	/// Returns radial analysis with layer bounds and point counts for persistence in DB.
 	/// </summary>
+	public static ICollection<RadialAnalysisLayerResult> GetNanosystemAnalyzeWithLayers<T>(
+		ICollection<T> particles, GenerationZone generationZone, int zoneCount, int vectorCount) where T : Particle
+		=> GetNanosystemAnalyzeWithLayers(particles, generationZone, zoneCount, vectorCount, null);
+
+	/// <summary>
+	/// Returns radial analysis with layer bounds and point counts for persistence in DB.
+	/// </summary>
 	/// <param name="progress">Optional progress reporter; reports 0–100 as each layer completes.</param>
 	public static ICollection<RadialAnalysisLayerResult> GetNanosystemAnalyzeWithLayers<T>(
 		ICollection<T> particles, GenerationZone generationZone, int zoneCount, int vectorCount,
-		IProgress<float>? progress = null) where T : Particle
+		IProgress<float>? progress) where T : Particle
 	{
 		// V = 4/3*pi*r^3
 		// r = (V/(4/3*pi))^1/3
