@@ -134,13 +134,25 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 		}
 		if (generationParameters.GetParticleKind() == ParticleKind.Parallelepiped)
 		{
-			var tree = new TernaryTreeNodeParallelepiped(
-				_particles!.MaxBy(x => x.GetDiameter())!.GetDiameter(), _generationZone.GlobalSize);
-			
-			var spheres = _particles
+			var spheres = _particles!
 				.OrderByDescending(p => p.GetVolume())
 				.Select(x => (Parallelepiped)x)
 				.ToList();
+			
+			var satOnlyInsertion = generationParameters is ParallelepipedGenerationParameters pp &&
+			                       pp.DisableIntersectionOptimizations;
+			
+			TernaryTreeNodeParallelepiped? tree = null;
+			List<Parallelepiped>? satOnlyPlaced = null;
+			if (!satOnlyInsertion)
+			{
+				tree = new TernaryTreeNodeParallelepiped(
+					_particles.MaxBy(x => x.GetDiameter())!.GetDiameter(), _generationZone.GlobalSize);
+			}
+			else
+			{
+				satOnlyPlaced = new List<Parallelepiped>();
+			}
 			
 			GenerationInfo = new GenerationInfo();
 			var globalSizeFloat = (float)_generationZone.GlobalSize;
@@ -172,7 +184,9 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 						// 	continue;
 						// }
 
-						var isAdded = tree.TryInsertParticle(particle, GenerationInfo, particleInfo);
+						var isAdded = satOnlyInsertion
+							? TryPlaceParallelepipedSatAgainstAll(satOnlyPlaced!, particle, GenerationInfo, particleInfo)
+							: tree!.TryInsertParticle(particle, GenerationInfo, particleInfo);
 
 						if (isAdded)
 						{
@@ -192,7 +206,15 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 				if (_excessedGenerationZone is not null)
 				{
 					_isDistributed = true;
-					return tree
+					if (satOnlyInsertion)
+					{
+						return satOnlyPlaced!
+							.Where(particle => IntersectionService.IsParallelepipedInBoundsOfSphereZone(_excessedGenerationZone.GlobalSize, particle))
+							.Select(Particle (x) => x)
+							.ToList();
+					}
+
+					return tree!
 						.GetParticles()
 						.Where(particle => IntersectionService.IsParallelepipedInBoundsOfSphereZone(_excessedGenerationZone.GlobalSize, particle))
 						.Select(Particle (x) => x)
@@ -200,7 +222,12 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 				}
 
 				_isDistributed = true;
-				return tree
+				if (satOnlyInsertion)
+				{
+					return satOnlyPlaced!.Select(Particle (x) => x).ToList();
+				}
+
+				return tree!
 					.GetParticles()
 					.Select(Particle (x) => x)
 					.ToList();
@@ -266,5 +293,29 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 		
 		_generationZone = new GenerationZone(generationParameters.GlobalSize!.Value, GenerationZoneForm.Cube);
 		return Task.FromResult(_generationZone);
+	}
+
+	/// <summary>
+	/// SAT only, against every already placed particle (no ternary tree / spatial index).
+	/// </summary>
+	private static bool TryPlaceParallelepipedSatAgainstAll(
+		IList<Parallelepiped> placed,
+		Parallelepiped particle,
+		GenerationInfo? info,
+		ParticleGenerationInfo? particleInfo)
+	{
+		foreach (var other in placed)
+		{
+			particleInfo?.IncrementParticlesCheckedForIntersection();
+			if (SAT.IsIntersect(other, particle, info, particleInfo))
+			{
+				info?.IncrementFirstNodeIntersectionFindTimes();
+				particleInfo?.IncrementFirstNodeIntersectionFindTimes();
+				return false;
+			}
+		}
+
+		placed.Add(particle);
+		return true;
 	}
 }

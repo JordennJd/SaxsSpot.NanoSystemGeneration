@@ -11,7 +11,8 @@ public record ParallelepipedGenerationParameters(
     float MaxSize,
     float Theta,
     float K,
-    double Excess)
+    double Excess,
+    bool DisableIntersectionOptimizations = false)
     : ParticleGenerationParameters(Count, NumericalConcentration, GlobalSize, MinSize, MaxSize, Theta, K, Excess)
 {
     public override ParticleKind GetParticleKind()
