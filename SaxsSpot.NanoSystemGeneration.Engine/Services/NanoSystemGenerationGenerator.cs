@@ -263,7 +263,6 @@ public class NanoSystemGenerator(ParticleGenerationParameters generationParamete
 
 		var c = 0.001f;
 		
-		//TODO логика обработки excess
 		if (generationParameters.Excess != 0)
 		{
 			var particleCountInCubeZone =
