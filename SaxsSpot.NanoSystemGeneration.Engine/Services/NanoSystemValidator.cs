@@ -68,7 +68,7 @@ public static class NanoSystemValidator
             }
 
             c++;
-            progressx.Report(c / (float)pointCount);
+            progress?.Report(c / (float)pointCount);
         });
     
         //TODO distinct
